@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Accounts</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h2 th:text="'Accounts for Tutorial: ' + ${tutorialTitle}"></h2>
+
+        <div th:if="${message}">
+            <p th:text="${message}"></p>
+        </div>
+    
+        <div th:unless="${accounts != null and accounts.size() > 0}">
+            <span>No Accounts found!</span>
+        </div>
+
+        <div th:if="${accounts != null and accounts.size() > 0}">
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Account ID</th>
+                        <th>Account Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="account : ${accounts}">
+                        <td th:text="${account.id}"></td>
+                        <td th:text="${account.name}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <a th:href="@{/tutorials}">Back to Tutorials</a>
+    </div>
+</body>
+</html>

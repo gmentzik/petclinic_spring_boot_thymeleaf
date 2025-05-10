@@ -1,0 +1,23 @@
+<a th:fragment="paging(pageNum, label, tooltip)" class="page-link"
+  th:href="@{'/customers?' + ${keyword!=null && keyword!=''? 'keyword=' + keyword + '&' : ''}
+                           + 'page=' + ${pageNum} + '&size=' + ${pageSize}
+                           + ${sortField!=null ? '&sort=' + sortField + ',' + sortDirection : ''}}"
+  th:title="${tooltip}" rel="tooltip">
+  [[${label}]]
+</a>
+
+<a th:fragment="pagingPets(id, pageNum, label, tooltip)" class="page-link"
+  th:href="@{'/customers/' + ${id} +'/pets?' + ${keyword!=null && keyword!=''? 'keyword=' + keyword + '&' : ''}
+                           + 'page=' + ${pageNum} + '&size=' + ${pageSize}
+                           + ${sortField!=null ? '&sort=' + sortField + ',' + sortDirection : ''}}"
+  th:title="${tooltip}" rel="tooltip">
+  [[${label}]]
+</a>
+
+<a th:fragment="pagingMedicalHistory(tid, pid, pageNum, label, tooltip)" class="page-link"
+  th:href="@{'/customers/' + ${tid} +'/pets/' + ${pid} + '/medicalhistory?' + ${keyword!=null && keyword!=''? 'keyword=' + keyword + '&' : ''}
+                           + 'page=' + ${pageNum} + '&size=' + ${pageSize}
+                           + ${sortField!=null ? '&sort=' + sortField + ',' + sortDirection : ''}}"
+  th:title="${tooltip}" rel="tooltip">
+  [[${label}]]
+</a>

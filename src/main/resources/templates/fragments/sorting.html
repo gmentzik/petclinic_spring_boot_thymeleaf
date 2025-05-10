@@ -1,0 +1,26 @@
+<th scope="col" th:fragment="sorting(field, label)">
+  <a th:href="@{'/customers?' + ${keyword!=null && keyword!=''? 'keyword=' + keyword + '&' : ''}
+                + 'page=' + ${currentPage} + '&size=' + ${pageSize}
+                + ${sortField!=null ? '&sort=' + field + ',' + (sortField == field ? reverseSortDirection : sortDirection) : ''}}">
+    [[${label}]] </a>
+  <span th:if="${sortField == field}"
+    th:class="${sortDirection == 'asc' ? 'fas fa-arrow-down-short-wide' : 'fas fa-arrow-down-wide-short'}"></span>
+</th>
+
+<th scope="col" th:fragment="sortingPets(field, label)">
+  <a th:href="@{'/customers/' + ${customer.id} + '/pets?' + ${keyword!=null && keyword!=''? 'keyword=' + keyword + '&' : ''}
+                + 'page=' + ${currentPage} + '&size=' + ${pageSize}
+                + ${sortField!=null ? '&sort=' + field + ',' + (sortField == field ? reverseSortDirection : sortDirection) : ''}}">
+    [[${label}]] </a>
+  <span th:if="${sortField == field}"
+    th:class="${sortDirection == 'asc' ? 'fas fa-arrow-down-short-wide' : 'fas fa-arrow-down-wide-short'}"></span>
+</th>
+
+<th scope="col" th:fragment="sortingMedicalHistory(field, label)">
+  <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${author.id} + '/medicalhistory?' + ${keyword!=null && keyword!=''? 'keyword=' + keyword + '&' : ''}
+                + 'page=' + ${currentPage} + '&size=' + ${pageSize}
+                + ${sortField!=null ? '&sort=' + field + ',' + (sortField == field ? reverseSortDirection : sortDirection) : ''}}">
+    [[${label}]] </a>
+  <span th:if="${sortField == field}"
+    th:class="${sortDirection == 'asc' ? 'fas fa-arrow-down-short-wide' : 'fas fa-arrow-down-wide-short'}"></span>
+</th>
