@@ -18,11 +18,11 @@
   <div class="container-fluid">
     <h2 class="text-center">[[${pageTitle}]]</h2>
     </br>
-    <h4 th:text="'Author/Pet: ' + ${author.name} + ' (' + ${author.id} + ')'"></h4>
-    <h4 th:text="'Tutorial/Customer: ' + ${tutorial.title} + ' (' + ${tutorial.id} + ')'"></h4>
+    <h4 th:text="'Pet: ' + ${pet.name} + ' (' + ${pet.id} + ')'"></h4>
+    <h4 th:text="'Customer: ' + ${customer.firstName} + ' ' + ${customer.surName} + ' (' + ${customer.id} + ')'"></h4>
 
     <div class="my-3">
-      <form th:action="@{'/tutorials/' + ${tutorial.id} + '/authors/' + ${author.id} + '/medicalhistoryrecord/save'}" method="post" enctype="multipart/form-data" th:object="${medicalhistory}"
+      <form th:action="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/save'}" method="post" enctype="multipart/form-data" th:object="${medicalhistory}"
         style="max-width: 550px; margin: 0 auto">
         <input type="hidden" th:field="*{id}" />
 
@@ -49,7 +49,7 @@
   <script type="text/javascript">
     $(document).ready(function () {
       $("#btnCancel").on("click", function () {
-        window.location = "[[@{'/tutorials/' + ${tutorial.id} + '/authors/' + ${author.id} + '/medicalhistory'}]]";
+        window.location = "[[@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}]]";
       });
     });
   </script>

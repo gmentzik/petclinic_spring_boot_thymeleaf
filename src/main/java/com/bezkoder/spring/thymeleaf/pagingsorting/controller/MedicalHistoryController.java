@@ -67,7 +67,7 @@ public class MedicalHistoryController {
             Customer customer = pet.getCustomer();
             // Add the medical history list to the model
             model.addAttribute("customer", customer);
-            model.addAttribute("author", pet);
+            model.addAttribute("pet", pet);
             model.addAttribute("medicalHistoryList", medicalHistoryListPage.getContent());
             model.addAttribute("customerTitle", customer.getFirstName() + " " + customer.getSurName());
             model.addAttribute("currentPage", medicalHistoryListPage.getNumber() + 1);

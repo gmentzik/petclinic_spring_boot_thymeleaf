@@ -106,7 +106,7 @@
 							<port>8080</port>
 						</ports>
 						<cmd>java -jar build/${project.name}-${project.version}.jar</cmd>
-		541ecf495695			</build>
+					</build>
 				</image>
 			</images>
 			</configuration>
