@@ -50,6 +50,54 @@
           </div>
 
           <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="email">Email</label>
+            <div class="col-sm-9">
+              <input type="email" th:field="*{email}" required class="form-control"
+                id="email" />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="phone">Phone</label>
+            <div class="col-sm-9">
+              <input type="tel" th:field="*{phone}" maxlength="16" class="form-control"
+                id="phone" />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="address">Address</label>
+            <div class="col-sm-9">
+              <input type="text" th:field="*{address}" maxlength="256" class="form-control"
+                id="address" />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="city">City</label>
+            <div class="col-sm-9">
+              <input type="text" th:field="*{city}" maxlength="128" class="form-control"
+                id="city" />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="state">State</label>
+            <div class="col-sm-9">
+              <input type="text" th:field="*{state}" maxlength="128" class="form-control"
+                id="state" />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="zipCode">Zip Code</label>
+            <div class="col-sm-9">
+              <input type="text" th:field="*{zipCode}" maxlength="16" class="form-control"
+                id="zipCode" />
+            </div>
+          </div>
+
+          <div class="form-group row">
             <label class="col-sm-3 form-check-label" for="published">Published</label>
             <div class="col-sm-9">
               <input type="checkbox" th:field="*{published}" />

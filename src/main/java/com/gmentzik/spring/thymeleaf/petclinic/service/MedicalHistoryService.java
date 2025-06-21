@@ -1,9 +1,9 @@
-package com.bezkoder.spring.thymeleaf.pagingsorting.service;
+package com.gmentzik.spring.thymeleaf.petclinic.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.MedicalHistory;
-import com.bezkoder.spring.thymeleaf.pagingsorting.repository.MedicalHistoryRepository;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalHistory;
+import com.gmentzik.spring.thymeleaf.petclinic.repository.MedicalHistoryRepository;
 
 
 @Service

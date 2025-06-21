@@ -1,4 +1,4 @@
-package com.bezkoder.spring.thymeleaf.pagingsorting.controller;
+package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.Pet;
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.Customer;
-import com.bezkoder.spring.thymeleaf.pagingsorting.repository.CustomerRepository;
-import com.bezkoder.spring.thymeleaf.pagingsorting.service.PetService;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
+import com.gmentzik.spring.thymeleaf.petclinic.repository.CustomerRepository;
+import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
 
 @Controller
 public class PetController {

@@ -1,4 +1,4 @@
-package com.bezkoder.spring.thymeleaf.pagingsorting;
+package com.gmentzik.spring.thymeleaf.petclinic;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

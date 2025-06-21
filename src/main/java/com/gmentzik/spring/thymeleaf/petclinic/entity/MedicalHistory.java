@@ -1,4 +1,4 @@
-package com.bezkoder.spring.thymeleaf.pagingsorting.entity;
+package com.gmentzik.spring.thymeleaf.petclinic.entity;
 
 
 import java.time.LocalDate;

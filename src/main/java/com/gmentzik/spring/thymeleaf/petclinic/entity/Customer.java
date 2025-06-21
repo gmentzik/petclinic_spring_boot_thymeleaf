@@ -1,8 +1,9 @@
-package com.bezkoder.spring.thymeleaf.pagingsorting.entity;
+package com.gmentzik.spring.thymeleaf.petclinic.entity;
 
 import java.util.List;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "customer")
@@ -20,6 +21,37 @@ public class Customer {
 
   @Column(nullable = false)
   private int level;
+
+  @Column(unique = true)
+  @Pattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}", message = "Invalid email format")
+  private String email;
+
+  @Column(length = 16)
+  private String phone;
+
+  @Column(length = 256)
+  private String address;
+
+  @Column(length = 128)
+  private String city;
+
+  @Column(length = 128)
+  private String state;
+
+  @Column(length = 16)
+  private String zipCode;
+
+  public Customer(String firstName, String surName, int level, String email, String phone, String address, String city, String state, String zipCode) {
+    this.firstName = firstName;
+    this.surName = surName;
+    this.level = level;
+    this.email = email;
+    this.phone = phone;
+    this.address = address;
+    this.city = city;
+    this.state = state;
+    this.zipCode = zipCode;
+  }
 
   @Column
   private boolean published;
@@ -84,6 +116,54 @@ public class Customer {
 
   public void setPets(List<Pet> pets) {
     this.pets = pets;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
+
+  public String getAddress() {
+    return address;
+  }
+
+  public void setAddress(String address) {
+    this.address = address;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public String getState() {
+    return state;
+  }
+
+  public void setState(String state) {
+    this.state = state;
+  }
+
+  public String getZipCode() {
+    return zipCode;
+  }
+
+  public void setZipCode(String zipCode) {
+    this.zipCode = zipCode;
   }
 
 

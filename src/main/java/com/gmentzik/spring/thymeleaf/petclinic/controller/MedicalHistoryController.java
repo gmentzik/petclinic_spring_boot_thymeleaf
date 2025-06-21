@@ -1,4 +1,4 @@
-package com.bezkoder.spring.thymeleaf.pagingsorting.controller;
+package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.Pet;
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.MedicalHistory;
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.Customer;
-import com.bezkoder.spring.thymeleaf.pagingsorting.repository.MedicalHistoryRepository;
-import com.bezkoder.spring.thymeleaf.pagingsorting.service.PetService;
-import com.bezkoder.spring.thymeleaf.pagingsorting.service.MedicalHistoryService;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalHistory;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
+import com.gmentzik.spring.thymeleaf.petclinic.repository.MedicalHistoryRepository;
+import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
+import com.gmentzik.spring.thymeleaf.petclinic.service.MedicalHistoryService;
 
 @Controller
 public class MedicalHistoryController {

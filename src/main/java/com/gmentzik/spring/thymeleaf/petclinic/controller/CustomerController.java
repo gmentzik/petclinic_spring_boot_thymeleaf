@@ -1,4 +1,4 @@
-package com.bezkoder.spring.thymeleaf.pagingsorting.controller;
+package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.Pet;
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.Customer;
-import com.bezkoder.spring.thymeleaf.pagingsorting.repository.CustomerRepository;
-import com.bezkoder.spring.thymeleaf.pagingsorting.repository.PetRepository;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
+import com.gmentzik.spring.thymeleaf.petclinic.repository.CustomerRepository;
+import com.gmentzik.spring.thymeleaf.petclinic.repository.PetRepository;
 
 
 @Controller
@@ -109,6 +109,12 @@ public class CustomerController {
         existingCustomer.setFirstName(customer.getFirstName());
         existingCustomer.setSurName(customer.getSurName());
         existingCustomer.setLevel(customer.getLevel());
+        existingCustomer.setEmail(customer.getEmail());
+        existingCustomer.setPhone(customer.getPhone());
+        existingCustomer.setAddress(customer.getAddress());
+        existingCustomer.setCity(customer.getCity());
+        existingCustomer.setState(customer.getState());
+        existingCustomer.setZipCode(customer.getZipCode());
         existingCustomer.setPublished(customer.isPublished());
         
         customer = existingCustomer;

@@ -64,6 +64,12 @@
             <th th:replace="fragments/sorting :: sorting('firstName','First Name')"></th>
             <th th:replace="fragments/sorting :: sorting('surName','Sur Name')"></th>
             <th th:replace="fragments/sorting :: sorting('level','Level')"></th>
+            <th th:replace="fragments/sorting :: sorting('email','Email')"></th>
+            <th th:replace="fragments/sorting :: sorting('phone','Phone')"></th>
+            <th th:replace="fragments/sorting :: sorting('address','Address')"></th>
+            <th th:replace="fragments/sorting :: sorting('city','City')"></th>
+            <th th:replace="fragments/sorting :: sorting('state','State')"></th>
+            <th th:replace="fragments/sorting :: sorting('zipCode','Zip Code')"></th>
             <th>Published</th>
             <th>no of Pets</th>
             <th>Pets</th>
@@ -76,6 +82,12 @@
             <td>[[${customer.firstName}]]</td>
             <td>[[${customer.surName}]]</td>
             <td>[[${customer.level}]]</td>
+            <td>[[${customer.email}]]</td>
+            <td>[[${customer.phone}]]</td>
+            <td>[[${customer.address}]]</td>
+            <td>[[${customer.city}]]</td>
+            <td>[[${customer.state}]]</td>
+            <td>[[${customer.zipCode}]]</td>
             <td>
               <a th:if="${customer.published == true}" class="fa-regular fa-square-check"
                 th:href="@{'/customers/' + ${customer.id} + '/published/false'}" title="Disable this customer"></a>
