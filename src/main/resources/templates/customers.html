@@ -71,6 +71,7 @@
             <th th:replace="fragments/sorting :: sorting('state','State')"></th>
             <th th:replace="fragments/sorting :: sorting('zipCode','Zip Code')"></th>
             <th>Published</th>
+            <th th:replace="fragments/sorting :: sorting('entryDate','Entry Date')"></th>
             <th>no of Pets</th>
             <th>Pets</th>
             <th>Actions</th>
@@ -94,15 +95,15 @@
               <a th:if="${customer.published == false}" class="fa-regular fa-square icon-dark"
                 th:href="@{'/customers/' + ${customer.id} + '/published/true'}" title="Enable this customer"></a>
             </td>
-            <!-- Pets -->
+            <td th:text="${#temporals.format(customer.entryDate, 'yyyy-MM-dd')}"></td>
             <td>
               <a th:href="@{'/customers/' + ${customer.id} + '/pets'}" th:text="${customer.pets != null ? customer.pets.size() : 0}"></a>
             </td>
             <td>
               <th:block th:each="pet, iterStat : ${customer.pets}">
-                  <span th:text="${pet.name}"></span><span th:text="${!iterStat.last ? ', ' : ''}"></span>
+                <span th:text="${pet.name}"></span><span th:text="${!iterStat.last ? ', ' : ''}"></span>
               </th:block>
-            </td> <!-- Pets' names -->
+            </td>
             
             <!-- Actions (Edit, Delete, etc.) -->
             <td>

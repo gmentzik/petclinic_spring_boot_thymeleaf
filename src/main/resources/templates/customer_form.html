@@ -10,6 +10,8 @@
   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
   <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
   <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 
 <body>
@@ -98,6 +100,14 @@
           </div>
 
           <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="entryDate">Entry Date</label>
+            <div class="col-sm-9">
+              <input type="text" th:field="*{entryDate}" class="form-control datepicker"
+                id="entryDate" placeholder="Select date" />
+            </div>
+          </div>
+
+          <div class="form-group row">
             <label class="col-sm-3 form-check-label" for="published">Published</label>
             <div class="col-sm-9">
               <input type="checkbox" th:field="*{published}" />
@@ -119,6 +129,18 @@
     $(document).ready(function () {
       $("#btnCancel").on("click", function () {
         window.location = "[[@{/customers}]]";
+      });
+    });
+  </script>
+
+  <script>
+    // Initialize date picker
+    document.addEventListener('DOMContentLoaded', function() {
+      flatpickr(".datepicker", {
+        dateFormat: "Y-m-d",
+        allowInput: true,
+        defaultDate: new Date(),
+        maxDate: "today"
       });
     });
   </script>

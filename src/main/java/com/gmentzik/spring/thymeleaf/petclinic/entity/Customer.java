@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "customer")
@@ -41,7 +43,11 @@ public class Customer {
   @Column(length = 16)
   private String zipCode;
 
-  public Customer(String firstName, String surName, int level, String email, String phone, String address, String city, String state, String zipCode) {
+  @Column(name = "entry_date", nullable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  private LocalDate entryDate;
+
+  public Customer(String firstName, String surName, int level, String email, String phone, String address, String city, String state, String zipCode, LocalDate entryDate) {
     this.firstName = firstName;
     this.surName = surName;
     this.level = level;
@@ -51,6 +57,7 @@ public class Customer {
     this.city = city;
     this.state = state;
     this.zipCode = zipCode;
+    this.entryDate = entryDate != null ? entryDate : LocalDate.now();
   }
 
   @Column
@@ -60,7 +67,7 @@ public class Customer {
   private List<Pet> pets;
 
   public Customer() {
-
+    this.entryDate = LocalDate.now();
   }
 
   public Customer(String firstName, String surName, int level, boolean published) {
@@ -166,11 +173,19 @@ public class Customer {
     this.zipCode = zipCode;
   }
 
+  public LocalDate getEntryDate() {
+    return entryDate;
+  }
+
+  public void setEntryDate(LocalDate entryDate) {
+    this.entryDate = entryDate != null ? entryDate : LocalDate.now();
+  }
+
 
   @Override
   public String toString() {
     return "Customer [id=" + id + ", firstName=" + firstName + ", surName=" + surName + ", level=" + level
-        + ", published=" + published + "]";
+        + ", published=" + published + "entryDate=" + entryDate + "email=" + email + "phone=" + phone + "address=" + address + "city=" + city + "state=" + state + "zipCode=" + zipCode + "]";
   }
 
 }
