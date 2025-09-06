@@ -116,6 +116,7 @@ public class CustomerController {
         existingCustomer.setState(customer.getState());
         existingCustomer.setZipCode(customer.getZipCode());
         existingCustomer.setPublished(customer.isPublished());
+        existingCustomer.setEntryDate(customer.getEntryDate());
         
         customer = existingCustomer;
       }

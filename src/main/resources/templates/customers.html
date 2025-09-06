@@ -95,7 +95,7 @@
               <a th:if="${customer.published == false}" class="fa-regular fa-square icon-dark"
                 th:href="@{'/customers/' + ${customer.id} + '/published/true'}" title="Enable this customer"></a>
             </td>
-            <td th:text="${#temporals.format(customer.entryDate, 'yyyy-MM-dd')}"></td>
+            <td>[[${customer.entryDate}]]</td>
             <td>
               <a th:href="@{'/customers/' + ${customer.id} + '/pets'}" th:text="${customer.pets != null ? customer.pets.size() : 0}"></a>
             </td>
