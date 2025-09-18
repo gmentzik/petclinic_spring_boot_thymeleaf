@@ -72,6 +72,9 @@
             <th th:replace="fragments/sorting :: sorting('zipCode','Zip Code')"></th>
             <th>Published</th>
             <th th:replace="fragments/sorting :: sorting('entryDate','Entry Date')"></th>
+            <th>Note 1</th>
+            <th>Note 2</th>
+            <th>Note 3</th>
             <th>no of Pets</th>
             <th>Pets</th>
             <th>Actions</th>
@@ -96,6 +99,21 @@
                 th:href="@{'/customers/' + ${customer.id} + '/published/true'}" title="Enable this customer"></a>
             </td>
             <td>[[${customer.entryDate}]]</td>
+            <td>
+              <a href="#" class="note-preview" th:attr="data-full=${customer.note1}"
+                 th:title="${customer.note1}"
+                 th:text="${customer.note1 != null ? (customer.note1.length() > 80 ? customer.note1.substring(0,80) + '…' : customer.note1) : ''}"></a>
+            </td>
+            <td>
+              <a href="#" class="note-preview" th:attr="data-full=${customer.note2}"
+                 th:title="${customer.note2}"
+                 th:text="${customer.note2 != null ? (customer.note2.length() > 80 ? customer.note2.substring(0,80) + '…' : customer.note2) : ''}"></a>
+            </td>
+            <td>
+              <a href="#" class="note-preview" th:attr="data-full=${customer.note3}"
+                 th:title="${customer.note3}"
+                 th:text="${customer.note3 != null ? (customer.note3.length() > 80 ? customer.note3.substring(0,80) + '…' : customer.note3) : ''}"></a>
+            </td>
             <td>
               <a th:href="@{'/customers/' + ${customer.id} + '/pets'}" th:text="${customer.pets != null ? customer.pets.size() : 0}"></a>
             </td>
@@ -172,6 +190,23 @@
     </div>
   </div>
 
+  <!-- Note View Modal -->
+  <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="noteModalLabel">Note</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <pre id="noteModalBody" class="mb-0" style="white-space: pre-wrap;"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div th:replace="fragments/footer :: footer"></div>
 
   <script type="text/javascript">
@@ -182,7 +217,7 @@
 
         customerFirstName = link.attr("customerFirstName");
         $("#yesBtn").attr("href", link.attr("href"));
-        $("#confirmText").html("Do you want to delete the customer \<strong\>" + customerFirstName + "\<\/strong\>?");
+        $("#confirmText").html("Do you want to delete the customer \u003cstrong\u003e" + customerFirstName + "\u003c/strong\u003e?");
         $("#confirmModal").modal();
       });
 
@@ -190,6 +225,15 @@
         e.preventDefault();
         $("#keyword").text("");
         window.location = "[[@{/customers}]]";
+      });
+
+      // Open full note in modal when clicking on preview
+      $(document).on("click", ".note-preview", function (e) {
+        e.preventDefault();
+        var full = $(this).attr("data-full") || "";
+        $("#noteModalLabel").text("Note");
+        $("#noteModalBody").text(full);
+        $("#noteModal").modal("show");
       });
     });
 

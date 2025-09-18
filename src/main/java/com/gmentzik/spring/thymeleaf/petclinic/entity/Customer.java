@@ -47,7 +47,9 @@ public class Customer {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private LocalDate entryDate;
 
-  public Customer(String firstName, String surName, int level, String email, String phone, String address, String city, String state, String zipCode, LocalDate entryDate) {
+  public Customer(String firstName, String surName, int level, String email, String phone, String address, 
+                 String city, String state, String zipCode, LocalDate entryDate, boolean published, 
+                 String note1, String note2, String note3) {
     this.firstName = firstName;
     this.surName = surName;
     this.level = level;
@@ -58,6 +60,10 @@ public class Customer {
     this.state = state;
     this.zipCode = zipCode;
     this.entryDate = entryDate != null ? entryDate : LocalDate.now();
+    this.published = published;
+    this.note1 = note1;
+    this.note2 = note2;
+    this.note3 = note3;
   }
 
   @Column
@@ -66,15 +72,17 @@ public class Customer {
   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Pet> pets;
 
+  @Column(columnDefinition = "TEXT")
+  private String note1;
+
+  @Column(columnDefinition = "TEXT")
+  private String note2;
+
+  @Column(columnDefinition = "TEXT")
+  private String note3;
+
   public Customer() {
     this.entryDate = LocalDate.now();
-  }
-
-  public Customer(String firstName, String surName, int level, boolean published) {
-    this.firstName = firstName;
-    this.surName = surName;
-    this.level = level;
-    this.published = published;
   }
 
   public Integer getId() {
@@ -115,6 +123,30 @@ public class Customer {
 
   public void setPublished(boolean published) {
     this.published = published;
+  }
+
+  public String getNote1() {
+    return note1;
+  }
+
+  public void setNote1(String note1) {
+    this.note1 = note1;
+  }
+
+  public String getNote2() {
+    return note2;
+  }
+
+  public void setNote2(String note2) {
+    this.note2 = note2;
+  }
+
+  public String getNote3() {
+    return note3;
+  }
+
+  public void setNote3(String note3) {
+    this.note3 = note3;
   }
 
   public List<Pet> getPets() {

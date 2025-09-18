@@ -117,6 +117,9 @@ public class CustomerController {
         existingCustomer.setZipCode(customer.getZipCode());
         existingCustomer.setPublished(customer.isPublished());
         existingCustomer.setEntryDate(customer.getEntryDate());
+        existingCustomer.setNote1(customer.getNote1());
+        existingCustomer.setNote2(customer.getNote2());
+        existingCustomer.setNote3(customer.getNote3());
         
         customer = existingCustomer;
       }
