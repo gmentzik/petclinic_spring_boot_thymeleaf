@@ -70,3 +70,46 @@ td.note-col .note-preview {
   max-height: calc(1.2em * 3); /* fallback height limit */
   line-clamp: 3; /* standard property for some engines */
 }
+
+/* Split table layout: left fixed, right scrollable */
+.table-split {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.left-fixed {
+  flex: 0 0 auto;
+  border-right: 1px solid #dee2e6;
+  max-width: 100%;
+}
+
+.right-scroll {
+  flex: 1 1 auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.right-scroll-inner {
+  min-width: 700px; /* ensure there is some space to scroll if needed */
+}
+
+/* Keep headers visible if content is tall */
+.table-split thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f8f9fa; /* Bootstrap light */
+}
+
+/* Prevent wrapping on the left fixed segment to keep it compact */
+.left-fixed .table th,
+.left-fixed .table td {
+  white-space: nowrap;
+}
+
+/* Synced row hover highlight */
+.row-hover td,
+.row-hover th {
+  background-color: #f1f3f5 !important; /* subtle gray */
+}
