@@ -48,3 +48,25 @@
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
 }
+
+/* Note columns (Note 1–3) */
+th.note-col,
+td.note-col {
+  width: 200px;      /* make them wider */
+  min-width: 200px;
+}
+
+/* Note preview inside note columns: smaller font and clamp to 3 lines */
+td.note-col .note-preview {
+  font-size: 0.85rem;    /* smaller font */
+  line-height: 1.2;      /* compact lines */
+  display: -webkit-box;  /* line clamp support */
+  -webkit-line-clamp: 3; /* show max 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;   /* allow wrapping */
+  word-break: break-word;
+  max-height: calc(1.2em * 3); /* fallback height limit */
+  line-clamp: 3; /* standard property for some engines */
+}

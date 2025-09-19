@@ -72,9 +72,9 @@
             <th th:replace="fragments/sorting :: sorting('zipCode','Zip Code')"></th>
             <th>Published</th>
             <th th:replace="fragments/sorting :: sorting('entryDate','Entry Date')"></th>
-            <th>Note 1</th>
-            <th>Note 2</th>
-            <th>Note 3</th>
+            <th class="note-col">Note 1</th>
+            <th class="note-col">Note 2</th>
+            <th class="note-col">Note 3</th>
             <th>no of Pets</th>
             <th>Pets</th>
             <th>Actions</th>
@@ -99,17 +99,17 @@
                 th:href="@{'/customers/' + ${customer.id} + '/published/true'}" title="Enable this customer"></a>
             </td>
             <td>[[${customer.entryDate}]]</td>
-            <td>
+            <td class="note-col">
               <a href="#" class="note-preview" th:attr="data-full=${customer.note1}"
                  th:title="${customer.note1}"
                  th:text="${customer.note1 != null ? (customer.note1.length() > 80 ? customer.note1.substring(0,80) + '…' : customer.note1) : ''}"></a>
             </td>
-            <td>
+            <td class="note-col">
               <a href="#" class="note-preview" th:attr="data-full=${customer.note2}"
                  th:title="${customer.note2}"
                  th:text="${customer.note2 != null ? (customer.note2.length() > 80 ? customer.note2.substring(0,80) + '…' : customer.note2) : ''}"></a>
             </td>
-            <td>
+            <td class="note-col">
               <a href="#" class="note-preview" th:attr="data-full=${customer.note3}"
                  th:title="${customer.note3}"
                  th:text="${customer.note3 != null ? (customer.note3.length() > 80 ? customer.note3.substring(0,80) + '…' : customer.note3) : ''}"></a>
