@@ -91,7 +91,7 @@ td.note-col .note-preview {
 }
 
 .right-scroll-inner {
-  min-width: 700px; /* ensure there is some space to scroll if needed */
+  min-width: 1100px; /* show more columns before scroll */
 }
 
 /* Keep headers visible if content is tall */
