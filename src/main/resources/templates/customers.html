@@ -69,6 +69,7 @@
                 <th th:replace="fragments/sorting :: sorting('surName','Sur Name')"></th>
                 <th th:replace="fragments/sorting :: sorting('email','Email')"></th>
                 <th th:replace="fragments/sorting :: sorting('phone','Phone')"></th>
+                <th>no of Pets</th>
               </tr>
             </thead>
             <tbody>
@@ -85,6 +86,9 @@
                 <td>[[${customer.surName}]]</td>
                 <td>[[${customer.email}]]</td>
                 <td>[[${customer.phone}]]</td>
+                <td>
+                  <a th:href="@{'/customers/' + ${customer.id} + '/pets'}" th:text="${customer.pets != null ? customer.pets.size() : 0}"></a>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -105,7 +109,6 @@
                   <th class="note-col">Note 1</th>
                   <th class="note-col">Note 2</th>
                   <th class="note-col">Note 3</th>
-                  <th>no of Pets</th>
                   <th>Pets</th>
                 </tr>
               </thead>
@@ -136,9 +139,6 @@
                     <a href="#" class="note-preview" th:attr="data-full=${customer.note3}"
                        th:title="${customer.note3}"
                        th:text="${customer.note3 != null ? (customer.note3.length() > 80 ? customer.note3.substring(0,80) + '…' : customer.note3) : ''}"></a>
-                  </td>
-                  <td>
-                    <a th:href="@{'/customers/' + ${customer.id} + '/pets'}" th:text="${customer.pets != null ? customer.pets.size() : 0}"></a>
                   </td>
                   <td>
                   <th:block th:each="pet, iterStat : ${customer.pets}">
