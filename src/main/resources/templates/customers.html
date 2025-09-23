@@ -12,7 +12,7 @@
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
-  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </head>
 
 <body>
@@ -87,7 +87,10 @@
                 <td>[[${customer.email}]]</td>
                 <td>[[${customer.phone}]]</td>
                 <td>
-                  <a th:href="@{'/customers/' + ${customer.id} + '/pets'}" th:text="${customer.pets != null ? customer.pets.size() : 0}"></a>
+                  <a th:href="@{'/customers/' + ${customer.id} + '/pets'}"
+                     data-toggle="tooltip"
+                     th:title="${customer.pets != null and !customer.pets.isEmpty() ? #strings.listJoin(customer.pets.![name], ', ') : 'No pets'}"
+                     th:text="${customer.pets != null ? customer.pets.size() : 0}"></a>
                 </td>
               </tr>
             </tbody>
@@ -109,7 +112,7 @@
                   <th class="note-col">Note 1</th>
                   <th class="note-col">Note 2</th>
                   <th class="note-col">Note 3</th>
-                  <th>Pets</th>
+                  <!-- <th>Pets</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -140,11 +143,11 @@
                        th:title="${customer.note3}"
                        th:text="${customer.note3 != null ? (customer.note3.length() > 80 ? customer.note3.substring(0,80) + '…' : customer.note3) : ''}"></a>
                   </td>
-                  <td>
+                  <!-- <td>
                   <th:block th:each="pet, iterStat : ${customer.pets}">
                     <span th:text="${pet.name}"></span><span th:text="${!iterStat.last ? ', ' : ''}"></span>
                   </th:block>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -227,6 +230,9 @@
 
   <script type="text/javascript">
     $(document).ready(function () {
+      // Enable Bootstrap tooltips for elements with data-toggle="tooltip"
+      $('[data-toggle="tooltip"]').tooltip();
+
       $(".btn-delete").on("click", function (e) {
         e.preventDefault();
         link = $(this);
