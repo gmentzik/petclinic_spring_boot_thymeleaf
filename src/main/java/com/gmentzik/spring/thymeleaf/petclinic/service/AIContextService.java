@@ -32,13 +32,12 @@ public class AIContextService {
                         .map(Pet::getName)
                         .collect(Collectors.joining(", "));
                 }
-                return String.format("Customer ID: %d, Name: %s %s, Phone: %s, Email: %s, Level: %d, Number of Pets: %d%s",
+                return String.format("Customer ID: %d, Name: %s %s, Phone: %s, Email: %s, Number of Pets: %d%s",
                     customer.getId(),
                     customer.getFirstName(),
                     customer.getSurName() != null ? customer.getSurName() : "",
                     customer.getPhone() != null ? customer.getPhone() : "N/A",
                     customer.getEmail() != null ? customer.getEmail() : "N/A",
-                    customer.getLevel(),
                     petCount,
                     petsList);
             })

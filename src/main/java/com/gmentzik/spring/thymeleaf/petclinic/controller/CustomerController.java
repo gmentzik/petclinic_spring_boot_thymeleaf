@@ -108,7 +108,6 @@ public class CustomerController {
         // Update the fields but keep the pets collection
         existingCustomer.setFirstName(customer.getFirstName());
         existingCustomer.setSurName(customer.getSurName());
-        existingCustomer.setLevel(customer.getLevel());
         existingCustomer.setEmail(customer.getEmail());
         existingCustomer.setPhone(customer.getPhone());
         existingCustomer.setAddress(customer.getAddress());

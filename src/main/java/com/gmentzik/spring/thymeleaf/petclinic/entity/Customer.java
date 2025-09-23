@@ -21,9 +21,6 @@ public class Customer {
   @Column(length = 256)
   private String surName;
 
-  @Column(nullable = false)
-  private int level;
-
   @Column(unique = true)
   @Pattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}", message = "Invalid email format")
   private String email;
@@ -47,12 +44,11 @@ public class Customer {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private LocalDate entryDate;
 
-  public Customer(String firstName, String surName, int level, String email, String phone, String address, 
+  public Customer(String firstName, String surName, String email, String phone, String address, 
                  String city, String state, String zipCode, LocalDate entryDate, boolean published, 
                  String note1, String note2, String note3) {
     this.firstName = firstName;
     this.surName = surName;
-    this.level = level;
     this.email = email;
     this.phone = phone;
     this.address = address;
@@ -107,14 +103,6 @@ public class Customer {
 
   public void setSurName(String surName) {
     this.surName = surName;
-  }
-
-  public int getLevel() {
-    return level;
-  }
-
-  public void setLevel(int level) {
-    this.level = level;
   }
 
   public boolean isPublished() {
@@ -216,7 +204,7 @@ public class Customer {
 
   @Override
   public String toString() {
-    return "Customer [id=" + id + ", firstName=" + firstName + ", surName=" + surName + ", level=" + level
+    return "Customer [id=" + id + ", firstName=" + firstName + ", surName=" + surName
         + ", published=" + published + "entryDate=" + entryDate + "email=" + email + "phone=" + phone + "address=" + address + "city=" + city + "state=" + state + "zipCode=" + zipCode + "]";
   }
 

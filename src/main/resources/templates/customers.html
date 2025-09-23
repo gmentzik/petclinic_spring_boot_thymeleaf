@@ -63,20 +63,26 @@
           <table id="customersLeft" class="table table-hover table-sm mb-0">
             <thead class="thead-light">
               <tr>
+                <th>Actions</th>
                 <th th:replace="fragments/sorting :: sorting('id','Id')"></th>
                 <th th:replace="fragments/sorting :: sorting('firstName','First Name')"></th>
                 <th th:replace="fragments/sorting :: sorting('surName','Sur Name')"></th>
-                <th th:replace="fragments/sorting :: sorting('level','Level')"></th>
                 <th th:replace="fragments/sorting :: sorting('email','Email')"></th>
                 <th th:replace="fragments/sorting :: sorting('phone','Phone')"></th>
               </tr>
             </thead>
             <tbody>
               <tr th:each="customer,iter : ${customers}" th:attr="data-index=${iter.index}">
+                <td>
+                  <a th:href="@{'/customers/' + ${customer.id}}" title="Edit this customer"
+                    class="fa-regular fa-pen-to-square icon-dark"></a>
+                  &nbsp;
+                  <a th:href="@{'/customers/delete/' + ${customer.id}}" th:customerFirstName="${customer.firstName}" id="btnDelete"
+                    title="Delete this customer" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
+                </td>
                 <th scope="row">[[${customer.id}]]</th>
                 <td>[[${customer.firstName}]]</td>
                 <td>[[${customer.surName}]]</td>
-                <td>[[${customer.level}]]</td>
                 <td>[[${customer.email}]]</td>
                 <td>[[${customer.phone}]]</td>
               </tr>
@@ -101,7 +107,6 @@
                   <th class="note-col">Note 3</th>
                   <th>no of Pets</th>
                   <th>Pets</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -136,22 +141,13 @@
                     <a th:href="@{'/customers/' + ${customer.id} + '/pets'}" th:text="${customer.pets != null ? customer.pets.size() : 0}"></a>
                   </td>
                   <td>
-                    <th:block th:each="pet, iterStat : ${customer.pets}">
-                      <span th:text="${pet.name}"></span><span th:text="${!iterStat.last ? ', ' : ''}"></span>
-                    </th:block>
-                  </td>
-                  <!-- Actions (Edit, Delete, etc.) -->
-                  <td>
-                    <a th:href="@{'/customers/' + ${customer.id}}" title="Edit this customer"
-                      class="fa-regular fa-pen-to-square icon-dark"></a>
-                    &nbsp;
-                    <a th:href="@{'/customers/delete/' + ${customer.id}}" th:customerFirstName="${customer.firstName}" id="btnDelete"
-                      title="Delete this customer" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                  <th:block th:each="pet, iterStat : ${customer.pets}">
+                    <span th:text="${pet.name}"></span><span th:text="${!iterStat.last ? ', ' : ''}"></span>
+                  </th:block>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
