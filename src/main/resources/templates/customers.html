@@ -77,9 +77,6 @@
                 <td>
                   <a th:href="@{'/customers/' + ${customer.id}}" title="Edit this customer"
                     class="fa-regular fa-pen-to-square icon-dark"></a>
-                  &nbsp;
-                  <a th:href="@{'/customers/delete/' + ${customer.id}}" th:customerFirstName="${customer.firstName}" id="btnDelete"
-                    title="Delete this customer" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
                 </td>
                 <th scope="row">[[${customer.id}]]</th>
                 <td>[[${customer.firstName}]]</td>
@@ -129,17 +126,17 @@
                   </td>
                   <td>[[${customer.entryDate}]]</td>
                   <td class="note-col">
-                    <a href="#" class="note-preview" th:attr="data-full=${customer.note1}"
+                    <a href="#" class="note-preview" th:attr="data-full=${customer.note1}" data-title="Note1"
                        th:title="${customer.note1}"
                        th:text="${customer.note1 != null ? (customer.note1.length() > 80 ? customer.note1.substring(0,80) + '…' : customer.note1) : ''}"></a>
                   </td>
                   <td class="note-col">
-                    <a href="#" class="note-preview" th:attr="data-full=${customer.note2}"
+                    <a href="#" class="note-preview" th:attr="data-full=${customer.note2}" data-title="Note2"
                        th:title="${customer.note2}"
                        th:text="${customer.note2 != null ? (customer.note2.length() > 80 ? customer.note2.substring(0,80) + '…' : customer.note2) : ''}"></a>
                   </td>
                   <td class="note-col">
-                    <a href="#" class="note-preview" th:attr="data-full=${customer.note3}"
+                    <a href="#" class="note-preview" th:attr="data-full=${customer.note3}" data-title="Note3"
                        th:title="${customer.note3}"
                        th:text="${customer.note3 != null ? (customer.note3.length() > 80 ? customer.note3.substring(0,80) + '…' : customer.note3) : ''}"></a>
                   </td>
@@ -187,27 +184,6 @@
     </nav>
   </div>
 
-  <div class="modal fade text-center" id="confirmModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Delete Confirmation</h5>
-          <button type="button" class="close" data-dismiss="modal">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <span id="confirmText"></span>
-        </div>
-
-        <div class="modal-footer">
-          <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Note View Modal -->
   <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true">
@@ -233,16 +209,6 @@
       // Enable Bootstrap tooltips for elements with data-toggle="tooltip"
       $('[data-toggle="tooltip"]').tooltip();
 
-      $(".btn-delete").on("click", function (e) {
-        e.preventDefault();
-        link = $(this);
-
-        customerFirstName = link.attr("customerFirstName");
-        $("#yesBtn").attr("href", link.attr("href"));
-        $("#confirmText").html("Do you want to delete the customer \u003cstrong\u003e" + customerFirstName + "\u003c/strong\u003e?");
-        $("#confirmModal").modal();
-      });
-
       $("#btnClear").on("click", function (e) {
         e.preventDefault();
         $("#keyword").text("");
@@ -253,7 +219,8 @@
       $(document).on("click", ".note-preview", function (e) {
         e.preventDefault();
         var full = $(this).attr("data-full") || "";
-        $("#noteModalLabel").text("Note");
+        var title = $(this).attr("data-title") || "Note";
+        $("#noteModalLabel").text(title);
         $("#noteModalBody").text(full);
         $("#noteModal").modal("show");
       });
