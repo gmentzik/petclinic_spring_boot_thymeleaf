@@ -154,10 +154,12 @@
               <a th:if="*{id} != null"
                  id="btnDelete"
                  class="btn btn-danger btn-sm"
-                 th:href="@{'/customers/delete/' + *{id}}"
-                 th:customerFirstName="*{firstName}">
+                 th:attr="data-customer-id=*{id}, data-customer-first-name=*{firstName}, data-customer-sur-name=*{surName}">
                  <i class="fa fa-trash-alt mr-1"></i> Delete
               </a>
+              <noscript>
+                <div class="text-muted small mt-1">Deleting requires JavaScript. Please enable JavaScript to delete this customer.</div>
+              </noscript>
             </div>
             <div>
               <button type="submit" id="btnSave" class="btn btn-primary btn-sm mr-2">
@@ -207,9 +209,13 @@
       $("#btnDelete").on("click", function (e) {
         e.preventDefault();
         var link = $(this);
-        var customerFirstName = link.attr("customerFirstName") || "";
-        $("#yesBtn").attr("href", link.attr("href"));
-        $("#confirmText").html("Do you want to delete the customer <strong>" + customerFirstName + "</strong>?");
+        var customerFirstName = link.data("customerFirstName") || "";
+        var customerSurName = link.data("customerSurName") || "";
+        var customerId = link.data("customerId");
+        var deleteUrl = "[[@{/customers/delete/}]]" + customerId;
+        $("#yesBtn").attr("href", deleteUrl);
+        var fullName = (customerFirstName + " " + customerSurName).trim();
+        $("#confirmText").html("Do you want to delete the customer <strong>" + fullName + "</strong>?");
         $("#confirmModal").modal();
       });
 
