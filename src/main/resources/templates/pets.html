@@ -18,7 +18,7 @@
 <body>
   <div th:replace="fragments/header :: header"></div>
 
-  <div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
+  <div class="container-fluid">
     <h2 class="text-center">Customer's Pets</h2>
     </br>
     <h4 th:text="'Accounts for Customer: ' + ${customer.id} + ' - ' + ${customer.firstName} + ' ' + ${customer.surName}"></h4>
@@ -66,7 +66,14 @@
           <tr>
             <th th:replace="fragments/sorting :: sortingPets('id','Id')"></th>
             <th th:replace="fragments/sorting :: sortingPets('name','Name')"></th>
-            <th>Gender</th>
+            <th th:replace="fragments/sorting :: sortingPets('gender','Gender')"></th>
+            <th th:replace="fragments/sorting :: sortingPets('animalType','Type')"></th>
+            <th>Breed</th>
+            <th th:replace="fragments/sorting :: sortingPets('entryDate','Entry Date')"></th>
+            <th th:replace="fragments/sorting :: sortingPets('birthDate','Birth Date')"></th>
+            <th class="note-col">Note 1</th>
+            <th class="note-col">Note 2</th>
+            <th class="note-col">Note 3</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -75,10 +82,29 @@
             <th scope="row">[[${pet.id}]]</th>
             <td>[[${pet.name}]]</td>
             <td>[[${pet.gender}]]</td>
+            <td>[[${pet.animalType}]]</td>
+            <td>[[${pet.breed}]]</td>
+            <td>[[${pet.entryDate}]]</td>
+            <td>[[${pet.birthDate}]]</td>
+            <td class="note-col">
+              <a href="#" class="note-preview" th:attr="data-full=${pet.note1}" data-title="Note1"
+                 th:title="${pet.note1}"
+                 th:text="${pet.note1 != null ? (pet.note1.length() > 80 ? pet.note1.substring(0,80) + '…' : pet.note1) : ''}"></a>
+            </td>
+            <td class="note-col">
+              <a href="#" class="note-preview" th:attr="data-full=${pet.note2}" data-title="Note2"
+                 th:title="${pet.note2}"
+                 th:text="${pet.note2 != null ? (pet.note2.length() > 80 ? pet.note2.substring(0,80) + '…' : pet.note2) : ''}"></a>
+            </td>
+            <td class="note-col">
+              <a href="#" class="note-preview" th:attr="data-full=${pet.note3}" data-title="Note3"
+                 th:title="${pet.note3}"
+                 th:text="${pet.note3 != null ? (pet.note3.length() > 80 ? pet.note3.substring(0,80) + '…' : pet.note3) : ''}"></a>
+            </td>
             <!-- Actions (Edit, Delete, etc.) -->
             <td>
               <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}" th:petName="${pet.name}" id="btnMedicalHistory"
-              title="Open Medical History" class="fa-regular fa fa-folder-open icon-dark"></a>
+                title="Open Medical History" class="fa-regular fa fa-folder-open icon-dark"></a>
               &nbsp;
               <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/edit'}" title="Edit Pet"
                 class="fa-regular fa-pen-to-square icon-dark"></a>
@@ -149,6 +175,23 @@
     </div>
   </div>
 
+  <!-- Note View Modal -->
+  <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="noteModalLabel">Note</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <pre id="noteModalBody" class="mb-0" style="white-space: pre-wrap;"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div th:replace="fragments/footer :: footer"></div>
 
   <script type="text/javascript">
@@ -174,6 +217,16 @@
         e.preventDefault();
         console.log("Clicked Add Pet");
         window.location = "[[@{'/customers/' + ${customer.id} + '/pets/new'}]]";
+      });
+
+      // Open full note in modal when clicking on preview
+      $(document).on("click", ".note-preview", function (e) {
+        e.preventDefault();
+        var full = $(this).attr("data-full") || "";
+        var title = $(this).attr("data-title") || "Note";
+        $("#noteModalLabel").text(title);
+        $("#noteModalBody").text(full);
+        $("#noteModal").modal("show");
       });
     });
 
