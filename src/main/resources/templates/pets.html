@@ -69,6 +69,7 @@
             <th th:replace="fragments/sorting :: sortingPets('gender','Gender')"></th>
             <th th:replace="fragments/sorting :: sortingPets('animalType','Type')"></th>
             <th>Breed</th>
+            <th>Neutered</th>
             <th th:replace="fragments/sorting :: sortingPets('entryDate','Entry Date')"></th>
             <th th:replace="fragments/sorting :: sortingPets('birthDate','Birth Date')"></th>
             <th class="note-col">Note 1</th>
@@ -84,6 +85,7 @@
             <td>[[${pet.gender}]]</td>
             <td>[[${pet.animalType}]]</td>
             <td>[[${pet.breed}]]</td>
+            <td>[[${pet.neutered}]]</td>
             <td>[[${pet.entryDate}]]</td>
             <td>[[${pet.birthDate}]]</td>
             <td class="note-col">

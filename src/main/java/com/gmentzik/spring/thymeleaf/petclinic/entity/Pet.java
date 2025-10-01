@@ -35,6 +35,11 @@ public class Pet {
   @Enumerated(EnumType.STRING)
   private Gender gender;
 
+  
+  @Enumerated(EnumType.STRING)
+  @Column(name = "neutered")
+  private Neutered neutered = Neutered.UNKNOWN;
+
   @Column(name = "entry_date", nullable = false)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private LocalDate entryDate;
@@ -61,6 +66,12 @@ public class Pet {
     FEMALE
   }
 
+  public enum Neutered {
+    YES,
+    NO,
+    UNKNOWN
+  }
+
 
   public enum AnimalType {
     DOG,
@@ -81,6 +92,7 @@ public class Pet {
              AnimalType animalType,
              String breed,
              Gender gender,
+             Neutered neutered,
              LocalDate entryDate,
              LocalDate birthDate,
              String note1,
@@ -91,6 +103,7 @@ public class Pet {
     this.animalType = animalType;
     this.breed = breed;
     this.gender = gender;
+    this.neutered = neutered;
     this.entryDate = entryDate != null ? entryDate : LocalDate.now();
     this.birthDate = birthDate;
     this.note1 = note1;
@@ -136,6 +149,15 @@ public class Pet {
 
   public void setGender(Gender gender) {
     this.gender = gender;
+  }
+
+
+  public Neutered getNeutered() {
+    return neutered;
+  }
+
+  public void setNeutered(Neutered neutered) {
+    this.neutered = neutered;
   }
 
   public AnimalType getAnimalType() {
@@ -205,6 +227,7 @@ public class Pet {
         ", animalType=" + animalType +
         ", breed='" + breed + '\'' +
         ", gender=" + gender +
+        ", neutered=" + neutered +
         ", entryDate=" + entryDate +
         ", birthDate=" + birthDate +
         ", note1='" + note1 + '\'' +
