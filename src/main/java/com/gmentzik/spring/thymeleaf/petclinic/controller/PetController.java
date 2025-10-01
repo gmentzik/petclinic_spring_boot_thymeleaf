@@ -77,8 +77,17 @@ public class PetController {
             } else {
                 System.out.println("EDIT PET");
                 Pet dbPet = petService.getPetById(pet.getId());
+                // Copy editable fields from form-bound pet to the persistent entity
                 dbPet.setName(pet.getName());
                 dbPet.setGender(pet.getGender());
+                dbPet.setAnimalType(pet.getAnimalType());
+                dbPet.setBreed(pet.getBreed());
+                dbPet.setNeutered(pet.getNeutered());
+                dbPet.setEntryDate(pet.getEntryDate());
+                dbPet.setBirthDate(pet.getBirthDate());
+                dbPet.setNote1(pet.getNote1());
+                dbPet.setNote2(pet.getNote2());
+                dbPet.setNote3(pet.getNote3());
                 Integer objTutorialId = dbPet.getCustomer().getId();
                 if (urlCustomerId != objTutorialId) {
                     throw new Exception("customer ID mismatch!!!");

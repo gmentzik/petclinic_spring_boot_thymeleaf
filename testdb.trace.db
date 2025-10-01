@@ -1028,3 +1028,6 @@ UPDATE [42001-214]
 2025-09-30 23:58:27 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "UPDATE [*]TABLE PET SET note1 = 'note1 kldjfsdjfklsdjfslkdjfslfjlksdfjkldsjflks'"; expected "identifier"; SQL statement:
 UPDATE TABLE PET SET note1 = 'note1 kldjfsdjfklsdjfslkdjfslfjlksdfjkldsjflks' [42001-214]
+2025-10-01 22:21:34 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]* F"; SQL statement:
+* F [42000-214]

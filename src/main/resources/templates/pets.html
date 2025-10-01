@@ -64,6 +64,7 @@
       <table class="table table-hover table-responsive-xl">
         <thead class="thead-light">
           <tr>
+            <th>Actions</th>
             <th th:replace="fragments/sorting :: sortingPets('id','Id')"></th>
             <th th:replace="fragments/sorting :: sortingPets('name','Name')"></th>
             <th th:replace="fragments/sorting :: sortingPets('gender','Gender')"></th>
@@ -75,11 +76,18 @@
             <th class="note-col">Note 1</th>
             <th class="note-col">Note 2</th>
             <th class="note-col">Note 3</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr th:each="pet : ${pets}">
+            <!-- Actions (Edit, Delete, etc.) -->
+            <td>
+              <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}" th:petName="${pet.name}" id="btnMedicalHistory"
+                title="Open Medical History" class="fa-regular fa fa-folder-open icon-dark"></a>
+              &nbsp;
+              <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/edit'}" title="Edit Pet"
+                class="fa-regular fa-pen-to-square icon-dark"></a>
+            </td>
             <th scope="row">[[${pet.id}]]</th>
             <td>[[${pet.name}]]</td>
             <td>[[${pet.gender}]]</td>
@@ -102,17 +110,6 @@
               <a href="#" class="note-preview" th:attr="data-full=${pet.note3}" data-title="Note3"
                  th:title="${pet.note3}"
                  th:text="${pet.note3 != null ? (pet.note3.length() > 80 ? pet.note3.substring(0,80) + '…' : pet.note3) : ''}"></a>
-            </td>
-            <!-- Actions (Edit, Delete, etc.) -->
-            <td>
-              <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}" th:petName="${pet.name}" id="btnMedicalHistory"
-                title="Open Medical History" class="fa-regular fa fa-folder-open icon-dark"></a>
-              &nbsp;
-              <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/edit'}" title="Edit Pet"
-                class="fa-regular fa-pen-to-square icon-dark"></a>
-              &nbsp;
-              <a th:href="@{'/pets/delete/' + ${pet.id}}" th:petName="${pet.name}" id="btnDelete"
-                title="Delete Pet" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
             </td>
           </tr>
         </tbody>
@@ -155,27 +152,7 @@
     </div>
   </div>
 
-  <div class="modal fade text-center" id="confirmModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Delete Confirmation</h5>
-          <button type="button" class="close" data-dismiss="modal">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <span id="confirmText"></span>
-        </div>
-
-        <div class="modal-footer">
-          <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  
 
   <!-- Note View Modal -->
   <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true">
@@ -198,16 +175,6 @@
 
   <script type="text/javascript">
     $(document).ready(function () {
-
-      $(".btn-delete").on("click", function (e) {
-        e.preventDefault();
-        link = $(this);
-
-        petName = link.attr("petName");
-        $("#yesBtn").attr("href", link.attr("href"));
-        $("#confirmText").html("Do you want to delete the Pet \<strong\>" + petName + "\<\/strong\>?");
-        $("#confirmModal").modal();
-      });
 
       $("#btnClear").on("click", function (e) {
         e.preventDefault();
