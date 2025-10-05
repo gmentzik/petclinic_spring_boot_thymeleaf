@@ -9,24 +9,21 @@
   <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
-    integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
   <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </head>
 
-<body>
+  <body>
   <div th:replace="fragments/header :: header"></div>
 
-  <div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
+  <div class="container-fluid">
     <h2 class="text-center">Medical History</h2>
     </br>
     <h4 th:text="'Medical History for Pet: ' + ${pet.name} + ' (' + ${pet.id} + ')'"></h4>
     <h4 th:text="'of customer: ' + ${customer.firstName} + ' ' + ${customer.surName} + ' (' + ${customer.id} + ')'"></h4>
     
-
-    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
-      role="alert">
+    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message" role="alert">
       [[${message}]]
       <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
