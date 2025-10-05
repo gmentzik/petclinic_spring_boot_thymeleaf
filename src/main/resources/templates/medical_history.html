@@ -42,33 +42,28 @@
     </div>
 
     <div th:if="${medicalHistoryList != null and medicalHistoryList.size() > 0}">
-      <table class="table table-hover table-responsive-xl">
-        <thead class="thead-light">
-          <tr>
-            <th th:replace="fragments/sorting :: sortingMedicalHistory('id','Id')"></th>
-            <th th:replace="fragments/sorting :: sortingMedicalHistory('created','Date added')">Date added</th>
-            <th>Date Updated</th>
-            <th>Report</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="history : ${medicalHistoryList}">
-            <th scope="row">[[${history.id}]]</th>
-            <td>[[${history.created}]]</td>
-            <td>[[${history.updated}]]</td>
-            <td>[[${history.report}]]</td>
-            <!-- Actions (Edit, Delete, etc.) -->
-            <td>
-              <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/'+ ${history.id} + '/edit'}" title="Edit this entry"
-              class="fa-regular fa-pen-to-square icon-dark"></a>
-            &nbsp;
-            <a th:href="@{'/medicalhistory/delete/' + ${history.id}}" th:customerTitle="${history.id}" id="btnDelete"
-              title="Delete this entry" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
-            </td>            
-          </tr>
-        </tbody>
-      </table>
+      <div class="history-list">
+        <div class="history-item border rounded p-3 mb-3" th:each="history : ${medicalHistoryList}">
+          <div class="d-flex flex-wrap">
+            <!-- Left: 20% -->
+            <div class="pr-3 mb-2" style="flex: 0 0 20%; max-width: 20%;">
+              <div><strong>Created:</strong> [[${history.created}]]</div>
+              <div><strong>Updated:</strong> [[${history.updated}]]</div>
+              <div class="mt-2">
+                <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/'+ ${history.id} + '/edit'}" title="Edit this entry"
+                   class="fa-regular fa-pen-to-square icon-dark" aria-label="Edit"></a>
+                &nbsp;
+                <a th:href="@{'/medicalhistory/delete/' + ${history.id}}" th:customerTitle="${history.id}" id="btnDelete"
+                   title="Delete this entry" class="fa-regular fa-trash-can icon-dark btn-delete" aria-label="Delete"></a>
+              </div>
+            </div>
+            <!-- Right: 80% -->
+            <div class="mb-2" style="flex: 0 0 80%; max-width: 80%;">
+              <div class="report" style="white-space: pre-wrap;">[[${history.report}]]</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div th:unless="${medicalHistoryList != null and medicalHistoryList.size() > 0}">
