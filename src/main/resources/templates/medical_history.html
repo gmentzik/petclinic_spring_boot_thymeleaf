@@ -52,9 +52,6 @@
               <div class="mt-2">
                 <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/'+ ${history.id} + '/edit'}" title="Edit this entry"
                    class="fa-regular fa-pen-to-square icon-dark" aria-label="Edit"></a>
-                &nbsp;
-                <a th:href="@{'/medicalhistory/delete/' + ${history.id}}" th:customerTitle="${history.id}" id="btnDelete"
-                   title="Delete this entry" class="fa-regular fa-trash-can icon-dark btn-delete" aria-label="Delete"></a>
               </div>
             </div>
             <!-- Right: 80% -->
