@@ -12,13 +12,13 @@
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
-  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </head>
 
 <body>
   <div th:replace="fragments/header :: header"></div>
 
-  <div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
+  <div class="container-fluid">
     <h2 class="text-center">Customers</h2>
 
     <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
@@ -57,52 +57,99 @@
     </div>
 
     <div th:if="${customers.size() > 0}">
-      <table class="table table-hover table-responsive-xl">
-        <thead class="thead-light">
-          <tr>
-            <th th:replace="fragments/sorting :: sorting('id','Id')"></th>
-            <th th:replace="fragments/sorting :: sorting('firstName','First Name')"></th>
-            <th th:replace="fragments/sorting :: sorting('surName','Sur Name')"></th>
-            <th th:replace="fragments/sorting :: sorting('level','Level')"></th>
-            <th>Published</th>
-            <th>no of Pets</th>
-            <th>Pets</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="customer : ${customers}">
-            <th scope="row">[[${customer.id}]]</th>
-            <td>[[${customer.firstName}]]</td>
-            <td>[[${customer.surName}]]</td>
-            <td>[[${customer.level}]]</td>
-            <td>
-              <a th:if="${customer.published == true}" class="fa-regular fa-square-check"
-                th:href="@{'/customers/' + ${customer.id} + '/published/false'}" title="Disable this customer"></a>
-              <a th:if="${customer.published == false}" class="fa-regular fa-square icon-dark"
-                th:href="@{'/customers/' + ${customer.id} + '/published/true'}" title="Enable this customer"></a>
-            </td>
-            <!-- Pets -->
-            <td>
-              <a th:href="@{'/customers/' + ${customer.id} + '/pets'}" th:text="${customer.pets != null ? customer.pets.size() : 0}"></a>
-            </td>
-            <td>
-              <th:block th:each="pet, iterStat : ${customer.pets}">
-                  <span th:text="${pet.name}"></span><span th:text="${!iterStat.last ? ', ' : ''}"></span>
-              </th:block>
-            </td> <!-- Pets' names -->
-            
-            <!-- Actions (Edit, Delete, etc.) -->
-            <td>
-              <a th:href="@{'/customers/' + ${customer.id}}" title="Edit this customer"
-                class="fa-regular fa-pen-to-square icon-dark"></a>
-              &nbsp;
-              <a th:href="@{'/customers/delete/' + ${customer.id}}" th:customerFirstName="${customer.firstName}" id="btnDelete"
-                title="Delete this customer" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-split d-flex">
+        <!-- Left (fixed) table: up to Phone -->
+        <div class="left-fixed">
+          <table id="customersLeft" class="table table-hover table-sm mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th>Actions</th>
+                <th th:replace="fragments/sorting :: sorting('id','Id')"></th>
+                <th th:replace="fragments/sorting :: sorting('firstName','First Name')"></th>
+                <th th:replace="fragments/sorting :: sorting('surName','Sur Name')"></th>
+                <th th:replace="fragments/sorting :: sorting('email','Email')"></th>
+                <th th:replace="fragments/sorting :: sorting('phone','Phone')"></th>
+                <th>no of Pets</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="customer,iter : ${customers}" th:attr="data-index=${iter.index}">
+                <td>
+                  <a th:href="@{'/customers/' + ${customer.id}}" title="Edit this customer"
+                    class="fa-regular fa-pen-to-square icon-dark"></a>
+                </td>
+                <th scope="row">[[${customer.id}]]</th>
+                <td>[[${customer.firstName}]]</td>
+                <td>[[${customer.surName}]]</td>
+                <td>[[${customer.email}]]</td>
+                <td>[[${customer.phone}]]</td>
+                <td>
+                  <a th:href="@{'/customers/' + ${customer.id} + '/pets'}"
+                     data-toggle="tooltip"
+                     th:title="${customer.pets != null and !customer.pets.isEmpty() ? #strings.listJoin(customer.pets.![name], ', ') : 'No pets'}"
+                     th:text="${customer.pets != null ? customer.pets.size() : 0}"></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Right (scrollable) table: remaining columns -->
+        <div class="right-scroll flex-grow-1">
+          <div class="right-scroll-inner">
+            <table id="customersRight" class="table table-hover table-sm mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th th:replace="fragments/sorting :: sorting('address','Address')"></th>
+                  <th th:replace="fragments/sorting :: sorting('city','City')"></th>
+                  <th th:replace="fragments/sorting :: sorting('state','State')"></th>
+                  <th th:replace="fragments/sorting :: sorting('zipCode','Zip Code')"></th>
+                  <th>Published</th>
+                  <th th:replace="fragments/sorting :: sorting('entryDate','Entry Date')"></th>
+                  <th class="note-col">Note 1</th>
+                  <th class="note-col">Note 2</th>
+                  <th class="note-col">Note 3</th>
+                  <!-- <th>Pets</th> -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="customer,iter : ${customers}" th:attr="data-index=${iter.index}">
+                  <td>[[${customer.address}]]</td>
+                  <td>[[${customer.city}]]</td>
+                  <td>[[${customer.state}]]</td>
+                  <td>[[${customer.zipCode}]]</td>
+                  <td>
+                    <a th:if="${customer.published == true}" class="fa-regular fa-square-check"
+                      th:href="@{'/customers/' + ${customer.id} + '/published/false'}" title="Disable this customer"></a>
+                    <a th:if="${customer.published == false}" class="fa-regular fa-square icon-dark"
+                      th:href="@{'/customers/' + ${customer.id} + '/published/true'}" title="Enable this customer"></a>
+                  </td>
+                  <td>[[${customer.entryDate}]]</td>
+                  <td class="note-col">
+                    <a href="#" class="note-preview" th:attr="data-full=${customer.note1}" data-title="Note1"
+                       th:title="${customer.note1}"
+                       th:text="${customer.note1 != null ? (customer.note1.length() > 80 ? customer.note1.substring(0,80) + '…' : customer.note1) : ''}"></a>
+                  </td>
+                  <td class="note-col">
+                    <a href="#" class="note-preview" th:attr="data-full=${customer.note2}" data-title="Note2"
+                       th:title="${customer.note2}"
+                       th:text="${customer.note2 != null ? (customer.note2.length() > 80 ? customer.note2.substring(0,80) + '…' : customer.note2) : ''}"></a>
+                  </td>
+                  <td class="note-col">
+                    <a href="#" class="note-preview" th:attr="data-full=${customer.note3}" data-title="Note3"
+                       th:title="${customer.note3}"
+                       th:text="${customer.note3 != null ? (customer.note3.length() > 80 ? customer.note3.substring(0,80) + '…' : customer.note3) : ''}"></a>
+                  </td>
+                  <!-- <td>
+                  <th:block th:each="pet, iterStat : ${customer.pets}">
+                    <span th:text="${pet.name}"></span><span th:text="${!iterStat.last ? ', ' : ''}"></span>
+                  </th:block>
+                </td> -->
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <div class="" th:unless="${customers.size() > 0}">
@@ -137,23 +184,19 @@
     </nav>
   </div>
 
-  <div class="modal fade text-center" id="confirmModal">
-    <div class="modal-dialog">
+
+  <!-- Note View Modal -->
+  <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Delete Confirmation</h5>
-          <button type="button" class="close" data-dismiss="modal">
+          <h5 class="modal-title" id="noteModalLabel">Note</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-
         <div class="modal-body">
-          <span id="confirmText"></span>
-        </div>
-
-        <div class="modal-footer">
-          <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          <pre id="noteModalBody" class="mb-0" style="white-space: pre-wrap;"></pre>
         </div>
       </div>
     </div>
@@ -163,20 +206,70 @@
 
   <script type="text/javascript">
     $(document).ready(function () {
-      $(".btn-delete").on("click", function (e) {
-        e.preventDefault();
-        link = $(this);
-
-        customerFirstName = link.attr("customerFirstName");
-        $("#yesBtn").attr("href", link.attr("href"));
-        $("#confirmText").html("Do you want to delete the customer \<strong\>" + customerFirstName + "\<\/strong\>?");
-        $("#confirmModal").modal();
-      });
+      // Enable Bootstrap tooltips for elements with data-toggle="tooltip"
+      $('[data-toggle="tooltip"]').tooltip();
 
       $("#btnClear").on("click", function (e) {
         e.preventDefault();
         $("#keyword").text("");
         window.location = "[[@{/customers}]]";
+      });
+
+      // Open full note in modal when clicking on preview
+      $(document).on("click", ".note-preview", function (e) {
+        e.preventDefault();
+        var full = $(this).attr("data-full") || "";
+        var title = $(this).attr("data-title") || "Note";
+        $("#noteModalLabel").text(title);
+        $("#noteModalBody").text(full);
+        $("#noteModal").modal("show");
+      });
+
+      // Sync row and header heights between left and right tables
+      function syncSplitTableHeights() {
+        var $leftRows = $("#customersLeft tbody tr");
+        var $rightRows = $("#customersRight tbody tr");
+        var rowCount = Math.min($leftRows.length, $rightRows.length);
+        for (var i = 0; i < rowCount; i++) {
+          var $lr = $leftRows.eq(i).css("height", "");
+          var $rr = $rightRows.eq(i).css("height", "");
+          var h = Math.max($lr.outerHeight(), $rr.outerHeight());
+          $lr.css("height", h + "px");
+          $rr.css("height", h + "px");
+        }
+        // Headers
+        var $lh = $("#customersLeft thead tr").css("height", "");
+        var $rh = $("#customersRight thead tr").css("height", "");
+        var hh = Math.max($lh.outerHeight(), $rh.outerHeight());
+        $lh.css("height", hh + "px");
+        $rh.css("height", hh + "px");
+      }
+
+      // Initial sync and on window resize
+      syncSplitTableHeights();
+      $(window).on("resize", function(){
+        syncSplitTableHeights();
+      });
+
+      // Sync hover highlighting across tables
+      $("#customersLeft tbody").on("mouseenter", "tr", function(){
+        var idx = $(this).index();
+        $(this).addClass("row-hover");
+        $("#customersRight tbody tr").eq(idx).addClass("row-hover");
+      }).on("mouseleave", "tr", function(){
+        var idx = $(this).index();
+        $(this).removeClass("row-hover");
+        $("#customersRight tbody tr").eq(idx).removeClass("row-hover");
+      });
+
+      $("#customersRight tbody").on("mouseenter", "tr", function(){
+        var idx = $(this).index();
+        $(this).addClass("row-hover");
+        $("#customersLeft tbody tr").eq(idx).addClass("row-hover");
+      }).on("mouseleave", "tr", function(){
+        var idx = $(this).index();
+        $(this).removeClass("row-hover");
+        $("#customersLeft tbody tr").eq(idx).removeClass("row-hover");
       });
     });
 

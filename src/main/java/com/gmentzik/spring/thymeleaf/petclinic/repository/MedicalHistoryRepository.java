@@ -1,4 +1,4 @@
-package com.bezkoder.spring.thymeleaf.pagingsorting.repository;
+package com.gmentzik.spring.thymeleaf.petclinic.repository;
 
 import javax.transaction.Transactional;
 
@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.Pet;
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.MedicalHistory;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalHistory;
 
 
 @Repository

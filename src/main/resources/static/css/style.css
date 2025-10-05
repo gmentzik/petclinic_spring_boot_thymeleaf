@@ -48,3 +48,68 @@
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
 }
+
+/* Note columns (Note 1–3) */
+th.note-col,
+td.note-col {
+  width: 200px;      /* make them wider */
+  min-width: 200px;
+}
+
+/* Note preview inside note columns: smaller font and clamp to 3 lines */
+td.note-col .note-preview {
+  font-size: 0.85rem;    /* smaller font */
+  line-height: 1.2;      /* compact lines */
+  display: -webkit-box;  /* line clamp support */
+  -webkit-line-clamp: 3; /* show max 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;   /* allow wrapping */
+  word-break: break-word;
+  max-height: calc(1.2em * 3); /* fallback height limit */
+  line-clamp: 3; /* standard property for some engines */
+}
+
+/* Split table layout: left fixed, right scrollable */
+.table-split {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.left-fixed {
+  flex: 0 0 auto;
+  border-right: 1px solid #dee2e6;
+  max-width: 100%;
+}
+
+.right-scroll {
+  flex: 1 1 auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.right-scroll-inner {
+  min-width: 1100px; /* show more columns before scroll */
+}
+
+/* Keep headers visible if content is tall */
+.table-split thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f8f9fa; /* Bootstrap light */
+}
+
+/* Prevent wrapping on the left fixed segment to keep it compact */
+.left-fixed .table th,
+.left-fixed .table td {
+  white-space: nowrap;
+}
+
+/* Synced row hover highlight */
+.row-hover td,
+.row-hover th {
+  background-color: #f1f3f5 !important; /* subtle gray */
+}

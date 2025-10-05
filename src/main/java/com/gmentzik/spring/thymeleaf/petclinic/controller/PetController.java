@@ -1,4 +1,4 @@
-package com.bezkoder.spring.thymeleaf.pagingsorting.controller;
+package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.Pet;
-import com.bezkoder.spring.thymeleaf.pagingsorting.entity.Customer;
-import com.bezkoder.spring.thymeleaf.pagingsorting.repository.CustomerRepository;
-import com.bezkoder.spring.thymeleaf.pagingsorting.service.PetService;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
+import com.gmentzik.spring.thymeleaf.petclinic.repository.CustomerRepository;
+import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
 
 @Controller
 public class PetController {
@@ -77,8 +77,17 @@ public class PetController {
             } else {
                 System.out.println("EDIT PET");
                 Pet dbPet = petService.getPetById(pet.getId());
+                // Copy editable fields from form-bound pet to the persistent entity
                 dbPet.setName(pet.getName());
                 dbPet.setGender(pet.getGender());
+                dbPet.setAnimalType(pet.getAnimalType());
+                dbPet.setBreed(pet.getBreed());
+                dbPet.setNeutered(pet.getNeutered());
+                dbPet.setEntryDate(pet.getEntryDate());
+                dbPet.setBirthDate(pet.getBirthDate());
+                dbPet.setNote1(pet.getNote1());
+                dbPet.setNote2(pet.getNote2());
+                dbPet.setNote3(pet.getNote3());
                 Integer objTutorialId = dbPet.getCustomer().getId();
                 if (urlCustomerId != objTutorialId) {
                     throw new Exception("customer ID mismatch!!!");

@@ -8,8 +8,11 @@
 
   <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
   <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
-  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 </head>
 
 <body>
@@ -19,7 +22,7 @@
     <h2 class="text-center">[[${pageTitle}]]</h2>
 
     <div class="my-3">
-      <form th:action="@{'/customers/' + ${customer.id} + '/pets/save'}" method="post" enctype="multipart/form-data" th:object="${pet}"
+      <form id="petForm" th:action="@{'/customers/' + ${customer.id} + '/pets/save'}" method="post" enctype="multipart/form-data" th:object="${pet}"
         style="max-width: 550px; margin: 0 auto">
 
         <input type="hidden" th:field="*{id}" />
@@ -42,10 +45,109 @@
             </select>
           </div>
           </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="animalType">Type</label>
+            <div class="col-sm-9">
+              <select th:field="*{animalType}" class="form-control" id="animalType">
+                <option value="DOG">Dog</option>
+                <option value="CAT">Cat</option>
+                <option value="BIRD">Bird</option>
+                <option value="FISH">Fish</option>
+                <option value="REPTILE">Reptile</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="breed">Breed</label>
+            <div class="col-sm-9">
+              <input type="text" th:field="*{breed}" maxlength="128" class="form-control" id="breed" />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="neutered">Neutered</label>
+            <div class="col-sm-9">
+              <select th:field="*{neutered}" class="form-control" id="neutered">
+                <option value="YES">Yes</option>
+                <option value="NO">No</option>
+                <option value="UNKNOWN">Unknown</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="entryDate">Entry Date</label>
+            <div class="col-sm-9">
+              <div class="input-group date" id="entryDatePicker">
+                <input type="text" th:field="*{entryDate}" class="form-control" id="entryDate" placeholder="Select date" />
+                <div class="input-group-append">
+                  <span class="input-group-text bg-white">
+                    <i class="fa fa-calendar"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="birthDate">Birth Date</label>
+            <div class="col-sm-9">
+              <div class="input-group date" id="birthDatePicker">
+                <input type="text" th:field="*{birthDate}" class="form-control" id="birthDate" placeholder="Select date" />
+                <div class="input-group-append">
+                  <span class="input-group-text bg-white">
+                    <i class="fa fa-calendar"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="note1">Note 1</label>
+            <div class="col-sm-9">
+              <textarea th:field="*{note1}" class="form-control" id="note1" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="note2">Note 2</label>
+            <div class="col-sm-9">
+              <textarea th:field="*{note2}" class="form-control" id="note2" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="note3">Note 3</label>
+            <div class="col-sm-9">
+              <textarea th:field="*{note3}" class="form-control" id="note3" rows="3"></textarea>
+            </div>
+          </div>
         
-          <div class="text-center">
-            <input type="submit" value="Save" class="btn btn-primary btn-sm mr-2" />
-            <input type="button" value="Cancel" id="btnCancel" class="btn btn-secondary btn-sm" />
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <!-- Show only when editing an existing pet -->
+              <a th:if="*{id} != null"
+                 id="btnDelete"
+                 class="btn btn-danger btn-sm"
+                 th:attr="data-pet-id=*{id}, data-pet-name=*{name}">
+                 <i class="fa fa-trash-alt mr-1"></i> Delete
+              </a>
+              <noscript>
+                <div class="text-muted small mt-1">Deleting requires JavaScript. Please enable JavaScript to delete this pet.</div>
+              </noscript>
+            </div>
+            <div>
+              <button type="button" id="btnSave" class="btn btn-primary btn-sm mr-2">
+                <i class="fa fa-save mr-1"></i> Save
+              </button>
+              <button type="button" id="btnCancel" class="btn btn-secondary btn-sm">
+                <i class="fa fa-times mr-1"></i> Cancel
+              </button>
+            </div>
           </div>
         
         </div>
@@ -53,12 +155,98 @@
         </div>
         </div>
 
+  <!-- Save confirmation modal -->
+  <div class="modal fade text-center" id="saveConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Save Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <span>Do you want to save the changes?</span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="yesSaveBtn" class="btn btn-primary">Yes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="modal fade text-center" id="confirmModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <span id="confirmText"></span>
+        </div>
+
+        <div class="modal-footer">
+          <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div th:replace="fragments/footer :: footer"></div>
 
   <script type="text/javascript">
     $(document).ready(function () {
       $("#btnCancel").on("click", function () {
         window.location = "[[@{'/customers/' + ${customer.id} + '/pets'}]]";
+      });
+
+      // Save confirmation
+      $("#btnSave").on("click", function (e) {
+        e.preventDefault();
+        $("#saveConfirmModal").modal();
+      });
+
+      $("#yesSaveBtn").on("click", function () {
+        $("#saveConfirmModal").modal('hide');
+        $("#petForm").trigger('submit');
+      });
+
+      // Delete confirmation
+      $("#btnDelete").on("click", function (e) {
+        e.preventDefault();
+        var link = $(this);
+        var petName = link.data("petName") || "";
+        var petId = link.data("petId");
+        var deleteUrl = "[[@{/pets/delete/}]]" + petId;
+        $("#yesBtn").attr("href", deleteUrl);
+        $("#confirmText").html("Do you want to delete the pet <strong>" + petName + "</strong>?");
+        $("#confirmModal").modal();
+      });
+    });
+  </script>
+
+  <script>
+    // Initialize date pickers for entry and birth dates
+    $(document).ready(function(){
+      $('#entryDatePicker, #birthDatePicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        todayHighlight: true,
+        endDate: '0d',
+        weekStart: 1,
+        daysOfWeekHighlighted: '0',
+        orientation: 'bottom auto',
+        templates: {
+          leftArrow: '<i class="fa fa-chevron-left"></i>',
+          rightArrow: '<i class="fa fa-chevron-right"></i>'
+        }
       });
     });
   </script>

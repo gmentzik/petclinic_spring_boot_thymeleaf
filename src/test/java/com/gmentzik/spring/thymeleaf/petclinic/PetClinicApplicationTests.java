@@ -1,10 +1,10 @@
-package com.bezkoder.spring.thymeleaf.pagingsorting;
+package com.gmentzik.spring.thymeleaf.petclinic;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ThymeleafPaginationSortingApplicationTests {
+class PetClinicApplicationTests {
 
 	@Test
 	void contextLoads() {

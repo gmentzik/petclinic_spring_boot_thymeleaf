@@ -17,7 +17,7 @@
 </th>
 
 <th scope="col" th:fragment="sortingMedicalHistory(field, label)">
-  <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${author.id} + '/medicalhistory?' + ${keyword!=null && keyword!=''? 'keyword=' + keyword + '&' : ''}
+  <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory?' + ${keyword!=null && keyword!=''? 'keyword=' + keyword + '&' : ''}
                 + 'page=' + ${currentPage} + '&size=' + ${pageSize}
                 + ${sortField!=null ? '&sort=' + field + ',' + (sortField == field ? reverseSortDirection : sortDirection) : ''}}">
     [[${label}]] </a>
