@@ -45,7 +45,7 @@ public class Customer {
   private LocalDate entryDate;
 
   public Customer(String firstName, String surName, String email, String phone, String address, 
-                 String city, String state, String zipCode, LocalDate entryDate, boolean published, 
+                 String city, String state, String zipCode, LocalDate entryDate, boolean active, 
                  String note1, String note2, String note3) {
     this.firstName = firstName;
     this.surName = surName;
@@ -56,14 +56,14 @@ public class Customer {
     this.state = state;
     this.zipCode = zipCode;
     this.entryDate = entryDate != null ? entryDate : LocalDate.now();
-    this.published = published;
+    this.active = active;
     this.note1 = note1;
     this.note2 = note2;
     this.note3 = note3;
   }
 
   @Column
-  private boolean published;
+  private boolean active = true;
 
   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Pet> pets;
@@ -105,12 +105,12 @@ public class Customer {
     this.surName = surName;
   }
 
-  public boolean isPublished() {
-    return published;
+  public boolean isActive() {
+    return active;
   }
 
-  public void setPublished(boolean published) {
-    this.published = published;
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public String getNote1() {
@@ -205,7 +205,7 @@ public class Customer {
   @Override
   public String toString() {
     return "Customer [id=" + id + ", firstName=" + firstName + ", surName=" + surName
-        + ", published=" + published + "entryDate=" + entryDate + "email=" + email + "phone=" + phone + "address=" + address + "city=" + city + "state=" + state + "zipCode=" + zipCode + "]";
+        + ", active=" + active + "entryDate=" + entryDate + "email=" + email + "phone=" + phone + "address=" + address + "city=" + city + "state=" + state + "zipCode=" + zipCode + "]";
   }
 
 }

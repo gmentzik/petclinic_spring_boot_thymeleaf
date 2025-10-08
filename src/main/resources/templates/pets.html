@@ -64,7 +64,7 @@
       <table class="table table-hover table-responsive-xl">
         <thead class="thead-light">
           <tr>
-            <th>Actions</th>
+            <th class="actions-cell">Actions</th>
             <th th:replace="fragments/sorting :: sortingPets('id','Id')"></th>
             <th th:replace="fragments/sorting :: sortingPets('name','Name')"></th>
             <th th:replace="fragments/sorting :: sortingPets('gender','Gender')"></th>
@@ -81,10 +81,9 @@
         <tbody>
           <tr th:each="pet : ${pets}">
             <!-- Actions (Edit, Delete, etc.) -->
-            <td>
+            <td class="actions-cell">
               <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}" th:petName="${pet.name}" id="btnMedicalHistory"
                 title="Open Medical History" class="fa-regular fa fa-folder-open icon-dark"></a>
-              &nbsp;
               <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/edit'}" title="Edit Pet"
                 class="fa-regular fa-pen-to-square icon-dark"></a>
             </td>

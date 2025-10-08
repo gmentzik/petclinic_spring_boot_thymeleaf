@@ -55,35 +55,50 @@
         </div>
       </form>
     </div>
-
-    <div th:if="${customers.size() > 0}">
       <div class="table-split d-flex">
         <!-- Left (fixed) table: up to Phone -->
         <div class="left-fixed">
           <table id="customersLeft" class="table table-hover table-sm mb-0">
             <thead class="thead-light">
               <tr>
-                <th>Actions</th>
+                <th class="actions-cell">Actions</th>
+                <!-- Active status sortable column with icon header -->
+                <th class="center-cell-content">
+                  <a th:href="@{'/customers?' + ${keyword!=null && keyword!=''? 'keyword=' + keyword + '&' : ''}
+                                + 'page=' + ${currentPage} + '&size=' + ${pageSize}
+                                + ${sortField!=null ? '&sort=' + 'active' + ',' + (sortField == 'active' ? reverseSortDirection : sortDirection) : ''}}">
+                    <i class="fa-solid fa-user"></i>
+                  </a>
+                  <span th:if="${sortField == 'active'}"
+                        th:class="${sortDirection == 'asc' ? 'fas fa-arrow-down-short-wide' : 'fas fa-arrow-down-wide-short'}"></span>
+                </th>
                 <th th:replace="fragments/sorting :: sorting('id','Id')"></th>
                 <th th:replace="fragments/sorting :: sorting('firstName','First Name')"></th>
                 <th th:replace="fragments/sorting :: sorting('surName','Sur Name')"></th>
                 <th th:replace="fragments/sorting :: sorting('email','Email')"></th>
                 <th th:replace="fragments/sorting :: sorting('phone','Phone')"></th>
-                <th>no of Pets</th>
+                <th class="center-cell-content">no of Pets</th>
               </tr>
             </thead>
             <tbody>
               <tr th:each="customer,iter : ${customers}" th:attr="data-index=${iter.index}">
-                <td>
+                <td class="actions-cell">
+                  <a th:href="@{'/customers/' + ${customer.id} + '/pets'}" title="View customer's pets"
+                     class="fa-solid fa-dog icon-dark"></a>
                   <a th:href="@{'/customers/' + ${customer.id}}" title="Edit this customer"
-                    class="fa-regular fa-pen-to-square icon-dark"></a>
+                     class="fa-regular fa-pen-to-square icon-dark"></a>
+                </td>
+                <!-- Active status cell -->
+                <td class="center-cell-content">
+                  <i th:if="${customer.active}" class="fa-regular fa-circle-check text-success" data-toggle="tooltip" title="Customer is active"></i>
+                  <i th:if="${!customer.active}" class="fa-regular fa-circle-xmark text-danger" data-toggle="tooltip" title="Customer is not active"></i>
                 </td>
                 <th scope="row">[[${customer.id}]]</th>
                 <td>[[${customer.firstName}]]</td>
                 <td>[[${customer.surName}]]</td>
                 <td>[[${customer.email}]]</td>
                 <td>[[${customer.phone}]]</td>
-                <td>
+                <td class="center-cell-content">
                   <a th:href="@{'/customers/' + ${customer.id} + '/pets'}"
                      data-toggle="tooltip"
                      th:title="${customer.pets != null and !customer.pets.isEmpty() ? #strings.listJoin(customer.pets.![name], ', ') : 'No pets'}"
@@ -104,7 +119,6 @@
                   <th th:replace="fragments/sorting :: sorting('city','City')"></th>
                   <th th:replace="fragments/sorting :: sorting('state','State')"></th>
                   <th th:replace="fragments/sorting :: sorting('zipCode','Zip Code')"></th>
-                  <th>Published</th>
                   <th th:replace="fragments/sorting :: sorting('entryDate','Entry Date')"></th>
                   <th class="note-col">Note 1</th>
                   <th class="note-col">Note 2</th>
@@ -118,12 +132,6 @@
                   <td>[[${customer.city}]]</td>
                   <td>[[${customer.state}]]</td>
                   <td>[[${customer.zipCode}]]</td>
-                  <td>
-                    <a th:if="${customer.published == true}" class="fa-regular fa-square-check"
-                      th:href="@{'/customers/' + ${customer.id} + '/published/false'}" title="Disable this customer"></a>
-                    <a th:if="${customer.published == false}" class="fa-regular fa-square icon-dark"
-                      th:href="@{'/customers/' + ${customer.id} + '/published/true'}" title="Enable this customer"></a>
-                  </td>
                   <td>[[${customer.entryDate}]]</td>
                   <td class="note-col">
                     <a href="#" class="note-preview" th:attr="data-full=${customer.note1}" data-title="Note1"
