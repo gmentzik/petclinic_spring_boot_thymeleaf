@@ -20,8 +20,56 @@
   <div class="container-fluid">
     <h2 class="text-center">Medical History</h2>
     </br>
-    <h4 th:text="'Medical History for Pet: ' + ${pet.name} + ' (' + ${pet.id} + ')'"></h4>
-    <h4 th:text="'of customer: ' + ${customer.firstName} + ' ' + ${customer.surName} + ' (' + ${customer.id} + ')'"></h4>
+    <div class="card my-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <h5 class="card-title mb-0">
+            <span>Customer: </span>
+            <span th:text="${customer.firstName} + ' ' + ${customer.surName}"></span>
+            <small class="text-primary ml-2" th:text="'(id: ' + ${customer.id} + ')' "></small>
+          </h5>
+          <span class="badge" th:classappend="${customer.active} ? ' badge-success' : ' badge-secondary'" th:text="${customer.active} ? 'Active' : 'Inactive'"></span>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <ul class="list-unstyled mb-3">
+              <li><strong>Email:</strong> <span th:text="${customer.email} ?: '-' "></span></li>
+              <li><strong>Phone:</strong> <span th:text="${customer.phone} ?: '-' "></span></li>
+              <li><strong>Entry Date:</strong> <span th:text="${customer.entryDate}"></span></li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-unstyled mb-3">
+              <li><strong>Address:</strong> <span th:text="${customer.address} ?: '-' "></span></li>
+              <li><strong>City/State/ZIP:</strong>
+                <span th:text="(${customer.city} ?: '-') + ' / ' + (${customer.state} ?: '-') + ' / ' + (${customer.zipCode} ?: '-')"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <h6 class="mt-2">Pet Details</h6>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-unstyled mb-0">
+              <li><strong>Pet:</strong> <span th:text="${pet.name}"></span> <small class="text-primary ml-2" th:text="'(id: ' + ${pet.id} + ')' "></small></li>
+              <li><strong>Type:</strong> <span th:text="${pet.animalType} ?: '-' "></span></li>
+              <li><strong>Breed:</strong> <span th:text="${pet.breed} ?: '-' "></span></li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-unstyled mb-0">
+              <li><strong>Gender:</strong> <span th:text="${pet.gender} ?: '-' "></span></li>
+              <li><strong>Neutered:</strong> <span th:text="${pet.neutered} ?: '-' "></span></li>
+              <li><strong>Entry/Birth:</strong>
+                <span th:text="(${pet.entryDate} ?: '-') + ' / ' + (${pet.birthDate} ?: '-')"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message" role="alert">
       [[${message}]]
