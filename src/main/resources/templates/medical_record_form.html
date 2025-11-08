@@ -49,6 +49,17 @@
             </div>
           </div>
 
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">Attachments</label>
+            <div class="col-sm-9">
+              <div id="attachmentRows"></div>
+              <button type="button" id="addAttachment" class="btn btn-outline-secondary btn-sm mt-2">
+                <i class="fa fa-plus mr-1"></i> Add Image
+              </button>
+              <div class="text-muted small mt-2">Each file must be less than 1MB. Accepted: images.</div>
+            </div>
+          </div>
+
 
           <div class="d-flex justify-content-between align-items-center">
             <div>
@@ -148,6 +159,38 @@
           $("#confirmText").html("Do you want to delete this medical history record (ID: <strong>" + historyId + "</strong>)?");
           $("#confirmModal").modal();
         });
+
+        // Attachments dynamic rows
+        function addAttachmentRow() {
+          var row = $('<div class="form-row align-items-center mb-2 attachment-row">\
+            <div class="col-7">\
+              <input type="file" name="images" accept="image/*" class="form-control-file"/>\
+            </div>\
+            <div class="col-4">\
+              <input type="text" name="descriptions" class="form-control" placeholder="Description (optional)" maxlength="255"/>\
+            </div>\
+            <div class="col-1 text-right">\
+              <button type="button" class="btn btn-outline-danger btn-sm remove-attachment" title="Remove"><i class="fa fa-trash"></i></button>\
+            </div>\
+          </div>');
+          $("#attachmentRows").append(row);
+        }
+
+        $("#addAttachment").on("click", function () {
+          addAttachmentRow();
+        });
+
+        $("#attachmentRows").on("click", ".remove-attachment", function(){
+          $(this).closest('.attachment-row').remove();
+          if ($('.attachment-row').length === 0) {
+            addAttachmentRow();
+          }
+        });
+
+        // Ensure at least one row initially
+        if ($('.attachment-row').length === 0) {
+          addAttachmentRow();
+        }
       });
   </script>
 

@@ -1,6 +1,5 @@
 package com.gmentzik.spring.thymeleaf.petclinic.entity;
 
-
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
@@ -24,6 +23,11 @@ public class MedicalHistory {
     @Lob
     @Column(name = "report", columnDefinition = "TEXT")
     private String report;
+
+    // JSON array string; each object: {"description":"...", "fileName":"..."}
+    @Lob
+    @Column(name = "attachments", columnDefinition = "TEXT")
+    private String attachments;
 
     @Column(updatable=false)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -50,7 +54,7 @@ public class MedicalHistory {
         this.id = id;
     }
 
-    public Pet gePet() {
+    public Pet getPet() {
         return pet;
     }
 
@@ -64,6 +68,14 @@ public class MedicalHistory {
 
     public void setReport(String report) {
         this.report = report;
+    }
+
+    public String getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(String attachments) {
+        this.attachments = attachments;
     }
 
     public LocalDate getCreated() {
@@ -84,7 +96,7 @@ public class MedicalHistory {
 
     @Override
     public String toString() {
-        return "PetHistory [id=" + id + ", pet=" + pet + ", report=" + report + ", created=" + created + ", updated="
+        return "MedicalHistory [id=" + id + ", pet=" + pet + ", report=" + report + ", attachments=" + attachments + ", created=" + created + ", updated="
                 + updated + "]";
     }
      

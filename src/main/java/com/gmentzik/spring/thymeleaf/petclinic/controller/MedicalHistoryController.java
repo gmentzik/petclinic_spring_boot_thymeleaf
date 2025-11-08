@@ -1,6 +1,7 @@
 package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
 import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalHistory;
@@ -21,6 +23,20 @@ import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
 import com.gmentzik.spring.thymeleaf.petclinic.repository.MedicalHistoryRepository;
 import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
 import com.gmentzik.spring.thymeleaf.petclinic.service.MedicalHistoryService;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Controller
 public class MedicalHistoryController {
@@ -33,6 +49,11 @@ public class MedicalHistoryController {
 
     @Autowired
     private MedicalHistoryRepository medicalHistoryRepository;
+
+    @Value("${medicalhistory.attachments-dir}")
+    private String attachmentsDir;
+
+    private static final long MAX_FILE_SIZE_BYTES = 1_000_000L; // 1MB
 
     @GetMapping("/customers/{cId}/pets/{petId}/medicalhistory")
     public String getAuthorMedicalHistory(
@@ -117,7 +138,7 @@ public class MedicalHistoryController {
         try {
             System.out.println("IN EDIT MEDICAL RECORD");
             MedicalHistory mhr = medicalHistoryService.getMedicalHistoryById(recordId);
-            Pet pet = mhr.gePet();
+            Pet pet = mhr.getPet();
             Customer customer = pet.getCustomer();
             model.addAttribute("customer", customer);
             model.addAttribute("pet", pet);
@@ -138,6 +159,8 @@ public class MedicalHistoryController {
     public String saveMedicalRecord(MedicalHistory mhr,
                             @PathVariable("cId") Integer urlCustomerId,                        
                             @PathVariable("pId") Integer petId,
+                            @RequestParam(name = "images", required = false) List<MultipartFile> images,
+                            @RequestParam(name = "descriptions", required = false) List<String> descriptions,
                             Model model,
                             RedirectAttributes redirectAttributes) {
         try {
@@ -149,11 +172,13 @@ public class MedicalHistoryController {
                 System.out.println("NEW MEDICAL HISTORY REPORT");
                 Pet pet = petsService.getPetById(petId);
                 mhr.setPet(pet);
+                handleAndPersistAttachments(petId, mhr, images, descriptions, redirectAttributes);
                 medicalHistoryService.saveMeddicalHistory(mhr);
             } else {
                 System.out.println("EDIT MEDICAL RECORD");
                 Pet dbPet = petsService.getPetById(petId);
                 mhr.setPet(dbPet);
+                handleAndPersistAttachments(petId, mhr, images, descriptions, redirectAttributes);
                 medicalHistoryService.saveMeddicalHistory(mhr);
             }
             
@@ -177,7 +202,7 @@ public class MedicalHistoryController {
                 redirectAttributes.addFlashAttribute("message", "Medical history record not found: " + recordId);
                 return "redirect:/customers";
             }
-            Pet pet = mhr.gePet();
+            Pet pet = mhr.getPet();
             Customer customer = pet.getCustomer();
 
             medicalHistoryService.deleteMedicalHistory(recordId);
@@ -190,5 +215,54 @@ public class MedicalHistoryController {
         }
     }
 
+    private void handleAndPersistAttachments(Integer petId, MedicalHistory mhr, List<MultipartFile> images, List<String> descriptions, RedirectAttributes redirectAttributes) throws IOException {
+        if (images == null || images.isEmpty()) {
+            return;
+        }
+
+        Path baseDir = Paths.get(attachmentsDir).toAbsolutePath().normalize();
+        Files.createDirectories(baseDir);
+
+        List<Map<String, String>> existing = new ArrayList<>();
+        try {
+            if (mhr.getAttachments() != null && mhr.getAttachments().trim().length() > 0) {
+                existing = new ObjectMapper().readValue(mhr.getAttachments(), new TypeReference<List<Map<String, String>>>() {});
+            }
+        } catch (Exception ex) {
+            existing = new ArrayList<>();
+        }
+
+        List<Map<String, String>> toAppend = new ArrayList<>();
+        for (int i = 0; i < images.size(); i++) {
+            MultipartFile file = images.get(i);
+            if (file == null || file.isEmpty()) continue;
+
+            if (file.getSize() > MAX_FILE_SIZE_BYTES) {
+                redirectAttributes.addFlashAttribute("message", "One or more files exceed the 1MB size limit and were skipped.");
+                continue;
+            }
+
+            String original = file.getOriginalFilename();
+            String ext = "";
+            if (original != null && original.contains(".")) {
+                ext = original.substring(original.lastIndexOf('.'));
+            }
+            String storedName = petId + "-" + UUID.randomUUID() + ext;
+            Path target = baseDir.resolve(storedName);
+            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+
+            String desc = (descriptions != null && i < descriptions.size()) ? descriptions.get(i) : "";
+            Map<String, String> item = new HashMap<String, String>();
+            item.put("description", desc == null ? "" : desc);
+            item.put("fileName", storedName);
+            toAppend.add(item);
+        }
+
+        if (!toAppend.isEmpty()) {
+            existing.addAll(toAppend);
+            String json = new ObjectMapper().writeValueAsString(existing);
+            mhr.setAttachments(json);
+        }
+    }
 
 }
