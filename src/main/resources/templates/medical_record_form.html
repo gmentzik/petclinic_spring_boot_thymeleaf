@@ -8,8 +8,9 @@
 
   <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
   <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
-  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </head>
 
 <body>
@@ -22,39 +23,132 @@
     <h4 th:text="'Customer: ' + ${customer.firstName} + ' ' + ${customer.surName} + ' (' + ${customer.id} + ')'"></h4>
 
     <div class="my-3">
-      <form th:action="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/save'}" method="post" enctype="multipart/form-data" th:object="${medicalhistory}"
-        style="max-width: 550px; margin: 0 auto">
+      <form id="medicalHistoryForm" th:action="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/save'}" method="post" enctype="multipart/form-data" th:object="${medicalhistory}"
+        style="max-width: 900px; margin: 0 auto">
         <input type="hidden" th:field="*{id}" />
 
         <div class="p-3">
+          <!-- Created/Updated info (only for existing records) -->
+          <div class="form-group row" th:if="*{id} != null">
+            <label class="col-sm-3 col-form-label">Created</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" th:value="*{created}" readonly />
+            </div>
+          </div>
+          <div class="form-group row" th:if="*{id} != null">
+            <label class="col-sm-3 col-form-label">Last Updated</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" th:value="*{updated}" readonly />
+            </div>
+          </div>
+
           <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="report">Report</label>
             <div class="col-sm-9">
-              <textarea class="form-control" th:field="*{report}" required minlength="2" maxlength="1024" id="report" rows="3"></textarea>
+              <textarea class="form-control" th:field="*{report}" required minlength="2" maxlength="4096" id="report" rows="10"></textarea>
             </div>
           </div>
 
 
-          <div class="text-center">
-            <input type="submit" value="Save" class="btn btn-primary btn-sm mr-2" />
-            <input type="button" value="Cancel" id="btnCancel" class="btn btn-secondary btn-sm" />
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <!-- Show only when editing an existing medical history record -->
+              <a th:if="*{id} != null"
+                 id="btnDelete"
+                 class="btn btn-danger btn-sm"
+                 th:attr="data-history-id=*{id}">
+                 <i class="fa fa-trash-alt mr-1"></i> Delete
+              </a>
+              <noscript>
+                <div class="text-muted small mt-1">Deleting requires JavaScript. Please enable JavaScript to delete this record.</div>
+              </noscript>
+            </div>
+            <div>
+              <button type="button" id="btnSave" class="btn btn-primary btn-sm mr-2">
+                <i class="fa fa-save mr-1"></i> Save
+              </button>
+              <button type="button" id="btnCancel" class="btn btn-secondary btn-sm">
+                <i class="fa fa-times mr-1"></i> Cancel
+              </button>
+            </div>
           </div>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- Save confirmation modal -->
+  <div class="modal fade text-center" id="saveConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Save Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <span>Do you want to save the changes?</span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="yesSaveBtn" class="btn btn-primary">Yes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="modal fade text-center" id="confirmModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <span id="confirmText"></span>
+        </div>
+        <div class="modal-footer">
+          <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div th:replace="fragments/footer :: footer"></div>
 
   <script type="text/javascript">
-    $(document).ready(function () {
-      $("#btnCancel").on("click", function () {
-        window.location = "[[@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}]]";
+      $(document).ready(function () {
+        // Cancel -> back to medical history list
+        $("#btnCancel").on("click", function () {
+          window.location = "[[@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}]]";
+        });
+
+        // Save confirmation
+        $("#btnSave").on("click", function (e) {
+          e.preventDefault();
+          $("#saveConfirmModal").modal();
+        });
+
+        $("#yesSaveBtn").on("click", function () {
+          $("#saveConfirmModal").modal('hide');
+          $("#medicalHistoryForm").trigger('submit');
+        });
+
+        // Delete confirmation
+        $("#btnDelete").on("click", function (e) {
+          e.preventDefault();
+          var historyId = $(this).data("historyId");
+          var deleteUrl = "[[@{/medicalhistory/delete/}]]" + historyId;
+          $("#yesBtn").attr("href", deleteUrl);
+          $("#confirmText").html("Do you want to delete this medical history record (ID: <strong>" + historyId + "</strong>)?");
+          $("#confirmModal").modal();
+        });
       });
-    });
   </script>
-
-
-</body>
 
 </html>

@@ -28,33 +28,20 @@
         <input type="hidden" th:field="*{id}" />
 
         <div class="p-3">
+          <!-- Active status (edit existing customer only) -->
+          <div class="form-group row" th:if="*{id} != null">
+            <label class="col-sm-3 col-form-label" for="active">Active</label>
+            <div class="col-sm-9 d-flex align-items-center">
+              <input type="checkbox" th:field="*{active}" id="active" />
+            </div>
+          </div>
+          
           <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="firstName">First Name</label>
             <div class="col-sm-9">
               <input type="text" th:field="*{firstName}" required minlength="2" maxlength="128" class="form-control"
                 id="firstName" />
             </div>
-
-  <!-- Save confirmation modal -->
-  <div class="modal fade text-center" id="saveConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Save Confirmation</h5>
-          <button type="button" class="close" data-dismiss="modal">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <span>Do you want to save the changes?</span>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="yesSaveBtn" class="btn btn-primary">Yes</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-        </div>
-      </div>
-    </div>
-  </div>
           </div>
 
           <div class="form-group row">
@@ -172,6 +159,26 @@
           </div>
         </div>
       </form>
+    </div>
+  </div>
+  <!-- Save confirmation modal (moved outside the form) -->
+  <div class="modal fade text-center" id="saveConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Save Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <span>Do you want to save the changes?</span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="yesSaveBtn" class="btn btn-primary">Yes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </div>
     </div>
   </div>
   <!-- Delete confirmation modal -->

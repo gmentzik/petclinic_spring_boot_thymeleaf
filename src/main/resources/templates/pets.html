@@ -21,7 +21,40 @@
   <div class="container-fluid">
     <h2 class="text-center">Customer's Pets</h2>
     </br>
-    <h4 th:text="'Accounts for Customer: ' + ${customer.id} + ' - ' + ${customer.firstName} + ' ' + ${customer.surName}"></h4>
+    <div class="card my-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <h5 class="card-title mb-0">
+            <span>Customer details: </span>
+          </h5>
+          <span class="badge" th:classappend="${customer.active} ? ' badge-success' : ' badge-secondary'" th:text="${customer.active} ? 'Active' : 'Inactive'"></span>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <ul class="list-unstyled mb-0">
+              <li><strong>Customer:</strong> <span th:text="${customer.firstName} + ' ' + ${customer.surName}"></span><small class="text-primary ml-2" th:text="'(id: ' + ${customer.id} + ')' "></small></li>
+              <li><strong>Email:</strong> <span th:text="${customer.email} ?: '-' "></span></li>
+              <li><strong>Phone:</strong> <span th:text="${customer.phone} ?: '-' "></span></li>
+              <li><strong>Entry Date:</strong> <span th:text="${customer.entryDate}"></span></li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-unstyled mb-0">
+              <li><strong>Address:</strong> <span th:text="${customer.address} ?: '-' "></span></li>
+              <li><strong>City:</strong> <span th:text="${customer.city} ?: '-' "></span></li>
+              <li><strong>State:</strong> <span th:text="${customer.state} ?: '-' "></span></li>
+              <li><strong>ZIP:</strong> <span th:text="${customer.zipCode} ?: '-' "></span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-2" th:if="${customer.note1} or ${customer.note2} or ${customer.note3}">
+          <strong>Notes:</strong>
+          <div class="small text-muted" th:text="${customer.note1}"></div>
+          <div class="small text-muted" th:text="${customer.note2}"></div>
+          <div class="small text-muted" th:text="${customer.note3}"></div>
+        </div>
+      </div>
+    </div>
     <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
       role="alert">
       [[${message}]]
@@ -64,7 +97,7 @@
       <table class="table table-hover table-responsive-xl">
         <thead class="thead-light">
           <tr>
-            <th>Actions</th>
+            <th class="actions-cell">Actions</th>
             <th th:replace="fragments/sorting :: sortingPets('id','Id')"></th>
             <th th:replace="fragments/sorting :: sortingPets('name','Name')"></th>
             <th th:replace="fragments/sorting :: sortingPets('gender','Gender')"></th>
@@ -81,10 +114,9 @@
         <tbody>
           <tr th:each="pet : ${pets}">
             <!-- Actions (Edit, Delete, etc.) -->
-            <td>
+            <td class="actions-cell">
               <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}" th:petName="${pet.name}" id="btnMedicalHistory"
-                title="Open Medical History" class="fa-regular fa fa-folder-open icon-dark"></a>
-              &nbsp;
+                title="Open Medical History" class="fa-solid fa-file-medical-alt icon-dark"></a>
               <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/edit'}" title="Edit Pet"
                 class="fa-regular fa-pen-to-square icon-dark"></a>
             </td>

@@ -113,3 +113,19 @@ td.note-col .note-preview {
 .row-hover th {
   background-color: #f1f3f5 !important; /* subtle gray */
 }
+
+
+/* Center cell contents column */
+.center-cell-content {
+  text-align: center;
+}
+
+
+/* Center actions column and make small gap between icons */
+.actions-cell {
+  text-align: center;
+}
+
+.actions-cell a + a {
+  margin-left: 4px; /* 2px gap between action icons */
+}

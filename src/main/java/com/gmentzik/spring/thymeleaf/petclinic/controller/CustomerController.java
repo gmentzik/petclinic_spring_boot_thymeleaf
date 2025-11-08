@@ -87,7 +87,7 @@ public class CustomerController {
   @GetMapping("/customers/new")
   public String addCustomer(Model model) {
     Customer customer = new Customer();
-    customer.setPublished(true);
+    customer.setActive(true);
 
     model.addAttribute("customer", customer);
     model.addAttribute("pageTitle", "Create new Customer");
@@ -114,7 +114,7 @@ public class CustomerController {
         existingCustomer.setCity(customer.getCity());
         existingCustomer.setState(customer.getState());
         existingCustomer.setZipCode(customer.getZipCode());
-        existingCustomer.setPublished(customer.isPublished());
+        existingCustomer.setActive(customer.isActive());
         existingCustomer.setEntryDate(customer.getEntryDate());
         existingCustomer.setNote1(customer.getNote1());
         existingCustomer.setNote2(customer.getNote2());
@@ -165,24 +165,7 @@ public class CustomerController {
     return "redirect:/customers";
   }
 
-  @GetMapping("/customers/{id}/published/{status}")
-  public String updateCustomerPublishedStatus(@PathVariable("id") Integer id, @PathVariable("status") boolean published,
-      Model model, RedirectAttributes redirectAttributes) {
-    try {
-      customerRepository.updatePublishedStatus(id, published);
 
-      String status = published ? "published" : "disabled";
-      String message = "Customer id=" + id + " has been " + status;
-
-      redirectAttributes.addFlashAttribute("message", message);
-    } catch (Exception e) {
-      redirectAttributes.addFlashAttribute("message", e.getMessage());
-    }
-
-    return "redirect:/customers";
-  }
-
- 
   @GetMapping("/customers/{id}/pets")
   public String getPets(
       Model model,

@@ -166,4 +166,29 @@ public class MedicalHistoryController {
     }
 
 
+    @GetMapping("/medicalhistory/delete/{id}")
+    public String deleteMedicalHistory(
+            @PathVariable("id") Integer recordId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            // Find the record to determine redirect target
+            MedicalHistory mhr = medicalHistoryService.getMedicalHistoryById(recordId);
+            if (mhr == null) {
+                redirectAttributes.addFlashAttribute("message", "Medical history record not found: " + recordId);
+                return "redirect:/customers";
+            }
+            Pet pet = mhr.gePet();
+            Customer customer = pet.getCustomer();
+
+            medicalHistoryService.deleteMedicalHistory(recordId);
+            redirectAttributes.addFlashAttribute("message", "Medical history record deleted successfully.");
+
+            return "redirect:/customers/" + customer.getId() + "/pets/" + pet.getId() + "/medicalhistory";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            return "redirect:/customers";
+        }
+    }
+
+
 }
