@@ -116,7 +116,7 @@
             <!-- Actions (Edit, Delete, etc.) -->
             <td class="actions-cell">
               <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}" th:petName="${pet.name}" id="btnMedicalHistory"
-                title="Open Medical History" class="fa-regular fa fa-folder-open icon-dark"></a>
+                title="Open Medical History" class="fa-solid fa-file-medical-alt icon-dark"></a>
               <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/edit'}" title="Edit Pet"
                 class="fa-regular fa-pen-to-square icon-dark"></a>
             </td>
