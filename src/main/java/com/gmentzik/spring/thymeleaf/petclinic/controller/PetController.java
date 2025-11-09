@@ -3,15 +3,19 @@ package com.gmentzik.spring.thymeleaf.petclinic.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import java.net.URLConnection;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
 import com.gmentzik.spring.thymeleaf.petclinic.repository.CustomerRepository;
 import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
+import com.gmentzik.spring.thymeleaf.petclinic.service.FileStorageService;
 
 @Controller
 public class PetController {
@@ -57,11 +61,15 @@ public class PetController {
 
     // Save new pet or edit existing pet 
     // and redirect to customer pets listS
+    @Autowired
+    private FileStorageService fileStorageService;
+
     @PostMapping("/customers/{id}/pets/save")
-    public String savePet(Pet pet,
-                            @PathVariable("id") Integer urlCustomerId,
-                            Model model,
-                            RedirectAttributes redirectAttributes) {
+    public String savePet(
+            @ModelAttribute("pet") Pet pet,
+            @PathVariable("id") Integer urlCustomerId,
+            @RequestParam(value = "photoFile", required = false) MultipartFile photoFile,
+            RedirectAttributes redirectAttributes) {
         try {
 
             System.out.println("SAVE PET");
@@ -70,10 +78,21 @@ public class PetController {
             // If new Author/Pet does not contain Tutorial obj
             // if (authorTutorial == null) {
             if (pet.getId() == null) {
+                // New pet
                 System.out.println("NEW PET");
-                Customer customer = customerRepository.findById(urlCustomerId).get();
+                Customer customer = customerRepository.findById(urlCustomerId)
+                    .orElseThrow(() -> new RuntimeException("Customer not found"));
                 pet.setCustomer(customer);
-                petService.savePet(pet);
+                
+                // Save pet first to get an ID
+                pet = petService.savePet(pet);
+                
+                // Handle file upload if present
+                if (photoFile != null && !photoFile.isEmpty()) {
+                    String fileName = fileStorageService.storeFile(photoFile, pet.getId());
+                    pet.setPhotoFilename(fileName);
+                    petService.savePet(pet);
+                }
             } else {
                 System.out.println("EDIT PET");
                 Pet dbPet = petService.getPetById(pet.getId());
