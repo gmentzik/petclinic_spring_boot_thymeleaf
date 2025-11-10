@@ -112,6 +112,18 @@ public class PetController {
                 if (urlCustomerId != objTutorialId) {
                     throw new Exception("customer ID mismatch!!!");
                 }
+
+                // Handle file upload if present for existing pet
+                if (photoFile != null && !photoFile.isEmpty()) {
+                    // Delete old photo if it exists
+                    if (dbPet.getPhotoFilename() != null && !dbPet.getPhotoFilename().isEmpty()) {
+                        fileStorageService.deleteFile(dbPet.getPhotoFilename());
+                    }
+                    // Store new photo
+                    String fileName = fileStorageService.storeFile(photoFile, dbPet.getId());
+                    dbPet.setPhotoFilename(fileName);
+                }
+                
                 petService.savePet(dbPet);
             }
             
