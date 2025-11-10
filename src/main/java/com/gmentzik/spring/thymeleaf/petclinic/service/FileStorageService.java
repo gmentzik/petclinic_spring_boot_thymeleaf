@@ -8,7 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,34 +53,115 @@ public class FileStorageService {
             throw new IllegalArgumentException("File cannot be empty");
         }
         
-        // Generate unique filename
+        // Validate file name
         String originalName = file.getOriginalFilename();
         if (originalName == null || originalName.trim().isEmpty()) {
             throw new IllegalArgumentException("File name cannot be null or empty");
         }
         String originalFileName = StringUtils.cleanPath(originalName);
         
+        // Check for path traversal attempts
+        if (originalFileName.contains("..")) {
+            throw new IllegalArgumentException("Sorry! Filename contains invalid path sequence " + originalFileName);
+        }
+        
+        // Get file extension from original filename
         String fileExtension = "";
         int lastDotIndex = originalFileName.lastIndexOf('.');
         if (lastDotIndex > 0) {
-            fileExtension = originalFileName.substring(lastDotIndex);
+            fileExtension = originalFileName.substring(lastDotIndex).toLowerCase();
         }
         
-        String fileName = petId + "_" + UUID.randomUUID().toString() + fileExtension;
+        // Generate unique filename with appropriate extension
+        boolean isImage = fileExtension.matches("\\.(jpg|jpeg|png|gif|bmp|webp)$");
+        String fileName = petId + "_" + UUID.randomUUID().toString() + (isImage ? ".jpg" : fileExtension);
         
         try {
-            // Check if the file's name contains invalid characters
-            if (originalFileName.contains("..")) {
-                throw new RuntimeException("Sorry! Filename contains invalid path sequence " + originalFileName);
+            // Read the file content
+            byte[] fileContent = file.getBytes();
+            byte[] processedContent;
+            
+            try {
+                // Try to resize the image if it's an image
+                processedContent = isImage ? resizeImage(fileContent) : fileContent;
+            } catch (Exception e) {
+                // If resizing fails, use original content with original extension
+                processedContent = fileContent;
+                if (isImage) {
+                    // If it was supposed to be an image but resizing failed, keep original extension
+                    fileName = petId + "_" + UUID.randomUUID().toString() + fileExtension;
+                }
             }
-
-            // Copy file to the target location (Replacing existing file with the same name)
+            
+            // Save the file
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream inputStream = new ByteArrayInputStream(processedContent)) {
+                Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            }
             return fileName;
         } catch (IOException ex) {
             throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
         }
+    }
+    
+    /**
+     * Resizes an image to fit within 200x200 pixels while maintaining aspect ratio
+     * and converts it to JPG format with a white background.
+     * Only call this method with known image files.
+     *
+     * @param imageData the image data to resize
+     * @return the resized image as a byte array in JPG format
+     * @throws IOException if the image cannot be read or written, or if the format is unsupported
+     */
+    private byte[] resizeImage(byte[] imageData) throws IOException {
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageData));
+        if (originalImage == null) {
+            throw new IOException("Unsupported image format");
+        }
+
+        // Target dimensions
+        int targetWidth = 200;
+        int targetHeight = 200;
+        
+        // Create new image with white background
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = resizedImage.createGraphics();
+        
+        // Fill with white background
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, targetWidth, targetHeight);
+        
+        // Calculate dimensions to maintain aspect ratio
+        int originalWidth = originalImage.getWidth();
+        int originalHeight = originalImage.getHeight();
+        
+        // Calculate the new dimensions while maintaining aspect ratio
+        int newWidth = originalWidth;
+        int newHeight = originalHeight;
+        
+        // First check if we need to scale down
+        if (originalWidth > targetWidth || originalHeight > targetHeight) {
+            double widthRatio = (double) targetWidth / (double) originalWidth;
+            double heightRatio = (double) targetHeight / (double) originalHeight;
+            double ratio = Math.min(widthRatio, heightRatio);
+            
+            newWidth = (int) (originalWidth * ratio);
+            newHeight = (int) (originalHeight * ratio);
+        }
+        
+        // Calculate position to center the image
+        int x = (targetWidth - newWidth) / 2;
+        int y = (targetHeight - newHeight) / 2;
+        
+        // Draw the resized image
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.drawImage(originalImage, x, y, newWidth, newHeight, null);
+        g.dispose();
+
+        // Convert to byte array
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(resizedImage, "jpg", baos);
+        return baos.toByteArray();
     }
 
     /**
