@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.net.URLConnection;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -144,5 +145,26 @@ public class PetController {
         }
     }
 
- 
+    /**
+     * Serves the pet photo file.
+     * @param filename the name of the file to serve
+     * @return the file as a resource
+     */
+    @GetMapping("/pets/photo/{filename:.+}")
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+        try {
+            Resource file = fileStorageService.loadFileAsResource(filename);
+            String mimeType = URLConnection.guessContentTypeFromName(file.getFilename());
+            if (mimeType == null) {
+                mimeType = "application/octet-stream";
+            }
+            
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(mimeType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFilename() + "\"")
+                .body(file);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
