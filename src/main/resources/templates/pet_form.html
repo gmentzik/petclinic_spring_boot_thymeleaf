@@ -11,19 +11,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
   <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
   <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
-  <script>
-    // Update the file input label to show the selected filename
-    document.addEventListener('DOMContentLoaded', function() {
-      const fileInput = document.getElementById('photoFile');
-      if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-          const fileName = e.target.files[0] ? e.target.files[0].name : 'Choose file';
-          const nextSibling = e.target.nextElementSibling;
-          nextSibling.querySelector('span').textContent = fileName;
-        });
-      }
-    });
-  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 </head>
@@ -244,53 +231,56 @@
 
   <div th:replace="fragments/footer :: footer"></div>
 
-  <script type="text/javascript">
-    $(document).ready(function () {
-      $("#btnCancel").on("click", function () {
-        window.location = "[[@{'/customers/' + ${customer.id} + '/pets'}]]";
-      });
+  <script type="text/javascript" th:inline="javascript">
+    $(function() {
+      // Event Handlers
+        
+        // Navigation Cancel Button 
+        $("#btnCancel").on("click", () => {
+          window.location = `[[@{'/customers/' + ${customer.id} + '/pets'}]]`;
+        });
 
-      // Save confirmation
-      $("#btnSave").on("click", function (e) {
-        e.preventDefault();
-        $("#saveConfirmModal").modal();
-      });
+        // Save Confirmation
+        $("#btnSave").on("click", (e) => {
+          e.preventDefault();
+          $("#saveConfirmModal").modal();
+        });
 
-      $("#yesSaveBtn").on("click", function () {
-        $("#saveConfirmModal").modal('hide');
-        $("#petForm").trigger('submit');
-      });
+        $("#yesSaveBtn").on("click", () => {
+          $("#saveConfirmModal").modal('hide');
+          $("#petForm").trigger('submit');
+        });
 
-      // Delete confirmation
-      $("#btnDelete").on("click", function (e) {
-        e.preventDefault();
-        var link = $(this);
-        var petName = link.data("petName") || "";
-        var petId = link.data("petId");
-        var deleteUrl = "[[@{/pets/delete/}]]" + petId;
-        $("#yesBtn").attr("href", deleteUrl);
-        $("#confirmText").html("Do you want to delete the pet <strong>" + petName + "</strong>?");
-        $("#confirmModal").modal();
-      });
-    });
-  </script>
+        // Delete Confirmation
+        $("#btnDelete").on("click", (e) => {
+          e.preventDefault();
+          const petName = $(e.currentTarget).data("petName") || "";
+          const petId = $(e.currentTarget).data("petId");
+          $("#yesBtn").attr("href", `[[@{/pets/delete/}]]${petId}`);
+          $("#confirmText").html(`Do you want to delete the pet <strong>${petName}</strong>?`);
+          $("#confirmModal").modal();
+        });
 
-  <script>
-    // Initialize date pickers for entry and birth dates
-    $(document).ready(function(){
-      $('#entryDatePicker, #birthDatePicker').datepicker({
-        format: 'yyyy-mm-dd',
-        autoclose: true,
-        todayHighlight: true,
-        endDate: '0d',
-        weekStart: 1,
-        daysOfWeekHighlighted: '0',
-        orientation: 'bottom auto',
-        templates: {
-          leftArrow: '<i class="fa fa-chevron-left"></i>',
-          rightArrow: '<i class="fa fa-chevron-right"></i>'
-        }
-      });
+        // File Input
+        $("#photoFile").on('change', function() {
+          const fileName = this.files[0]?.name || 'Choose file';
+          $(this).next().find('span').text(fileName);
+        });
+
+        // Date Pickers
+        $('#entryDatePicker, #birthDatePicker').datepicker({
+          format: 'yyyy-mm-dd',
+          autoclose: true,
+          todayHighlight: true,
+          endDate: '0d',
+          weekStart: 1,
+          daysOfWeekHighlighted: '0',
+          orientation: 'bottom auto',
+          templates: {
+            leftArrow: '<i class="fa fa-chevron-left"></i>',
+            rightArrow: '<i class="fa fa-chevron-right"></i>'
+          }
+        });
     });
   </script>
 
