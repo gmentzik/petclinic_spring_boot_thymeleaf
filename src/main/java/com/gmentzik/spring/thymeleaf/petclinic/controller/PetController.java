@@ -17,6 +17,7 @@ import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
 import com.gmentzik.spring.thymeleaf.petclinic.repository.CustomerRepository;
 import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
 import com.gmentzik.spring.thymeleaf.petclinic.service.FileStorageService;
+import com.gmentzik.spring.thymeleaf.petclinic.utils.ImageType;
 
 @Controller
 public class PetController {
@@ -90,7 +91,7 @@ public class PetController {
                 
                 // Handle file upload if present
                 if (photoFile != null && !photoFile.isEmpty()) {
-                    String fileName = fileStorageService.storeFile(photoFile, pet.getId());
+                    String fileName = fileStorageService.storeFile(photoFile, pet.getId(), ImageType.PET_ID);
                     pet.setPhotoFilename(fileName);
                     petService.savePet(pet);
                 }
@@ -120,7 +121,7 @@ public class PetController {
                         fileStorageService.deleteFile(dbPet.getPhotoFilename());
                     }
                     // Store new photo
-                    String fileName = fileStorageService.storeFile(photoFile, dbPet.getId());
+                    String fileName = fileStorageService.storeFile(photoFile, dbPet.getId(), ImageType.PET_ID);
                     dbPet.setPhotoFilename(fileName);
                 }
                 

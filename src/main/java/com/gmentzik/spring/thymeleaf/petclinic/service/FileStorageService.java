@@ -22,12 +22,16 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
+import com.gmentzik.spring.thymeleaf.petclinic.utils.ImageType;
+
 @Service
 public class FileStorageService {
     
     private final Path fileStorageLocation;
+    private final FileStorageProperties fileStorageProperties;
 
     public FileStorageService(FileStorageProperties fileStorageProperties) {
+        this.fileStorageProperties = fileStorageProperties;
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
                 .toAbsolutePath()
                 .normalize();
@@ -40,15 +44,16 @@ public class FileStorageService {
     }
 
     /**
-     * Stores a file in the configured upload directory with a unique name based on petId.
-     *
+     * Stores a file in the configured upload directory with a unique name based on petId and image type.
+     * 
      * @param file the multipart file to store (must not be null)
      * @param petId the ID of the pet associated with the file (used for naming)
+     * @param imageType the type of the image (ID or MEDICAL_HISTORY)
      * @return the generated filename
      * @throws RuntimeException if the file cannot be stored or contains invalid characters
      * @throws IllegalArgumentException if the input file is null
      */
-    public String storeFile(@NonNull MultipartFile file, @NonNull Integer petId) {
+    public String storeFile(@NonNull MultipartFile file, @NonNull Integer petId, ImageType imageType) {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File cannot be empty");
         }
@@ -82,8 +87,12 @@ public class FileStorageService {
             byte[] processedContent;
             
             try {
-                // Try to resize the image if it's an image
-                processedContent = isImage ? resizeImage(fileContent) : fileContent;
+                // Resize image if it's an image file
+                if (file.getContentType() != null && file.getContentType().startsWith("image/")) {
+                    processedContent = resizeImage(fileContent, imageType);
+                } else {
+                    processedContent = fileContent;
+                }
             } catch (Exception e) {
                 // If resizing fails, use original content with original extension
                 processedContent = fileContent;
@@ -105,23 +114,33 @@ public class FileStorageService {
     }
     
     /**
-     * Resizes an image to fit within 200x200 pixels while maintaining aspect ratio
+     * Resizes an image to the appropriate dimensions based on image type while maintaining aspect ratio
      * and converts it to JPG format with a white background.
      * Only call this method with known image files.
-     *
+     * 
      * @param imageData the image data to resize
+     * @param imageType the type of the image (ID or MEDICAL_HISTORY)
      * @return the resized image as a byte array in JPG format
      * @throws IOException if the image cannot be read or written, or if the format is unsupported
      */
-    private byte[] resizeImage(byte[] imageData) throws IOException {
+    private byte[] resizeImage(byte[] imageData, ImageType imageType) throws IOException {
         BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageData));
         if (originalImage == null) {
             throw new IOException("Unsupported image format");
         }
 
-        // Target dimensions
-        int targetWidth = 200;
-        int targetHeight = 200;
+        // Get target dimensions based on image type
+        int targetWidth, targetHeight;
+        if (imageType == ImageType.MEDICAL_HISTORY) {
+            targetWidth = fileStorageProperties.getPetMhImageWidth();
+            targetHeight = fileStorageProperties.getPetMhImageHeight();
+        } else if (imageType == ImageType.PET_ID) {
+            // Default to ID image dimensions
+            targetWidth = fileStorageProperties.getPetIdImageWidth();
+            targetHeight = fileStorageProperties.getPetIdImageHeight();
+        } else {
+            throw new IllegalArgumentException("Unsupported image type: " + imageType);
+        }
         
         // Create new image with white background
         BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
