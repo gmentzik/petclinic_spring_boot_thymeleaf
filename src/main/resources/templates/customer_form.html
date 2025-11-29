@@ -22,7 +22,7 @@
     <h2 class="text-center">[[${pageTitle}]]</h2>
 
     <div class="my-3">
-      <form id="customerForm" th:action="@{/customers/save}" method="post" enctype="multipart/form-data" th:object="${customer}"
+      <form id="customerForm" th:action="@{/customers/save}" method="post" th:object="${customer}"
         style="max-width: 550px; margin: 0 auto">
 
         <input type="hidden" th:field="*{id}" />
@@ -206,8 +206,11 @@
 
   <div th:replace="fragments/footer :: footer"></div>
 
-  <script type="text/javascript">
-    $(document).ready(function () {
+  <script type="text/javascript" th:inline="javascript">
+    $(function() {
+      // Event Handlers
+      
+      // Navigation Cancel Button 
       $("#btnCancel").on("click", function () {
         window.location = "[[@{/customers}]]";
       });
@@ -237,26 +240,20 @@
         $("#customerForm").trigger('submit');
       });
     });
-  </script>
 
-  
-  <script>
-    // Initialize date picker
-    $(document).ready(function(){
-      $('#datepicker').datepicker({
-        format: 'yyyy-mm-dd',
-        autoclose: true,
-        todayHighlight: true,
-        endDate: '0d',
-        weekStart: 1, // Monday as first day of week
-        daysOfWeekHighlighted: '0', // Highlight Sunday
-        orientation: 'bottom auto',
-        templates: {
-          leftArrow: '<i class="fa fa-chevron-left"></i>',
-          rightArrow: '<i class="fa fa-chevron-right"></i>'
-        }
-      });
-    });
+        $('#datepicker').datepicker({
+          format: 'yyyy-mm-dd',
+          autoclose: true,
+          todayHighlight: true,
+          endDate: '0d',
+          weekStart: 1, // Monday as first day of week
+          daysOfWeekHighlighted: '0', // Highlight Sunday
+          orientation: 'bottom auto',
+          templates: {
+            leftArrow: '<i class="fa fa-chevron-left"></i>',
+            rightArrow: '<i class="fa fa-chevron-right"></i>'
+          }
+        });
   </script>
 
 </body>

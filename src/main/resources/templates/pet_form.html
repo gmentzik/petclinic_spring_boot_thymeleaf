@@ -126,6 +126,36 @@
               <textarea th:field="*{note3}" class="form-control" id="note3" rows="3"></textarea>
             </div>
           </div>
+
+          <!-- Pet Photo -->
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">Pet Photo</label>
+            <div class="col-sm-9">
+              <!-- Show current photo if exists -->
+              <div th:if="${pet.photoFilename != null}" class="mb-2">
+                <img th:src="@{'/pets/photo/' + ${pet.photoFilename}}" 
+                     class="img-thumbnail" 
+                     style="width: 100px; height: 100px; object-fit: cover;" 
+                     alt="Pet photo" />
+              </div>
+              
+              <!-- File input -->
+              <div class="custom-file">
+                <input type="file" 
+                       class="custom-file-input" 
+                       id="photoFile" 
+                       name="photoFile" 
+                       accept="image/*">
+                <label class="custom-file-label" for="photoFile">
+                  <span th:if="${pet.photoFilename}" th:text="${pet.photoFilename}"></span>
+                  <span th:unless="${pet.photoFilename}">Choose file</span>
+                </label>
+              </div>
+              <small class="form-text text-muted">
+                Upload a photo of your pet (JPEG, PNG, etc.)
+              </small>
+            </div>
+          </div>
         
           <div class="d-flex justify-content-between align-items-center">
             <div>
@@ -201,53 +231,56 @@
 
   <div th:replace="fragments/footer :: footer"></div>
 
-  <script type="text/javascript">
-    $(document).ready(function () {
-      $("#btnCancel").on("click", function () {
-        window.location = "[[@{'/customers/' + ${customer.id} + '/pets'}]]";
-      });
+  <script type="text/javascript" th:inline="javascript">
+    $(function() {
+      // Event Handlers
+        
+        // Navigation Cancel Button 
+        $("#btnCancel").on("click", () => {
+          window.location = `[[@{'/customers/' + ${customer.id} + '/pets'}]]`;
+        });
 
-      // Save confirmation
-      $("#btnSave").on("click", function (e) {
-        e.preventDefault();
-        $("#saveConfirmModal").modal();
-      });
+        // Save Confirmation
+        $("#btnSave").on("click", (e) => {
+          e.preventDefault();
+          $("#saveConfirmModal").modal();
+        });
 
-      $("#yesSaveBtn").on("click", function () {
-        $("#saveConfirmModal").modal('hide');
-        $("#petForm").trigger('submit');
-      });
+        $("#yesSaveBtn").on("click", () => {
+          $("#saveConfirmModal").modal('hide');
+          $("#petForm").trigger('submit');
+        });
 
-      // Delete confirmation
-      $("#btnDelete").on("click", function (e) {
-        e.preventDefault();
-        var link = $(this);
-        var petName = link.data("petName") || "";
-        var petId = link.data("petId");
-        var deleteUrl = "[[@{/pets/delete/}]]" + petId;
-        $("#yesBtn").attr("href", deleteUrl);
-        $("#confirmText").html("Do you want to delete the pet <strong>" + petName + "</strong>?");
-        $("#confirmModal").modal();
-      });
-    });
-  </script>
+        // Delete Confirmation
+        $("#btnDelete").on("click", (e) => {
+          e.preventDefault();
+          const petName = $(e.currentTarget).data("petName") || "";
+          const petId = $(e.currentTarget).data("petId");
+          $("#yesBtn").attr("href", `[[@{/pets/delete/}]]${petId}`);
+          $("#confirmText").html(`Do you want to delete the pet <strong>${petName}</strong>?`);
+          $("#confirmModal").modal();
+        });
 
-  <script>
-    // Initialize date pickers for entry and birth dates
-    $(document).ready(function(){
-      $('#entryDatePicker, #birthDatePicker').datepicker({
-        format: 'yyyy-mm-dd',
-        autoclose: true,
-        todayHighlight: true,
-        endDate: '0d',
-        weekStart: 1,
-        daysOfWeekHighlighted: '0',
-        orientation: 'bottom auto',
-        templates: {
-          leftArrow: '<i class="fa fa-chevron-left"></i>',
-          rightArrow: '<i class="fa fa-chevron-right"></i>'
-        }
-      });
+        // File Input
+        $("#photoFile").on('change', function() {
+          const fileName = this.files[0]?.name || 'Choose file';
+          $(this).next().find('span').text(fileName);
+        });
+
+        // Date Pickers
+        $('#entryDatePicker, #birthDatePicker').datepicker({
+          format: 'yyyy-mm-dd',
+          autoclose: true,
+          todayHighlight: true,
+          endDate: '0d',
+          weekStart: 1,
+          daysOfWeekHighlighted: '0',
+          orientation: 'bottom auto',
+          templates: {
+            leftArrow: '<i class="fa fa-chevron-left"></i>',
+            rightArrow: '<i class="fa fa-chevron-right"></i>'
+          }
+        });
     });
   </script>
 

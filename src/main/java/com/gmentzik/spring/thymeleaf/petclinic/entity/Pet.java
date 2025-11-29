@@ -57,6 +57,9 @@ public class Pet {
   @Column(columnDefinition = "TEXT")
   private String note3;
 
+  @Column(name = "photo_filename", length = 255)
+  private String photoFilename;
+
   public Pet() {
     this.entryDate = LocalDate.now();
   }
@@ -216,6 +219,14 @@ public class Pet {
     this.note3 = note3;
   }
 
+  public String getPhotoFilename() {
+    return photoFilename;
+  }
+
+  public void setPhotoFilename(String photoFilename) {
+    this.photoFilename = photoFilename;
+  }
+
   @Override
   public String toString() {
     Integer customerId = customer != null ? customer.getId() : null;
@@ -233,6 +244,7 @@ public class Pet {
         ", note1='" + note1 + '\'' +
         ", note2='" + note2 + '\'' +
         ", note3='" + note3 + '\'' +
+        ", photoFilename='" + photoFilename + '\'' +
         ", medicalHistoryCount=" + medicalHistoryCount +
         '}';
   }
