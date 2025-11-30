@@ -49,6 +49,49 @@
             </div>
           </div>
 
+          <!-- Images Section -->
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">Medical Images</label>
+            <div class="col-sm-9">
+              <!-- Single Image Upload Form -->
+              <div class="border p-3 rounded mb-3">
+                <div class="input-group">
+                  <div class="custom-file">
+                    <input type="file" id="imageInput" class="custom-file-input" accept="image/*">
+                    <label class="custom-file-label" for="imageInput">Choose image</label>
+                  </div>
+                  <div class="input-group-append">
+                    <button type="button" id="addImageBtn" class="btn btn-outline-primary">
+                      <i class="fas fa-plus mr-1"></i> Add Image
+                    </button>
+                  </div>
+                </div>
+                <div class="input-group mt-2">
+                  <input type="text" id="imageDescription" class="form-control" placeholder="Image description (optional)" maxlength="255">
+                </div>
+              </div>
+              
+              <!-- Table for Added Images -->
+              <div id="imageTableContainer" class="mt-3" style="display: none;">
+                <h6>Added Images</h6>
+                <div class="table-responsive">
+                  <table class="table table-sm table-hover">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Preview</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="imageTableBody">
+                      <!-- Rows will be added here dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <small class="form-text text-muted">You can upload multiple images. Each can have an optional description.</small>
+            </div>
+          </div>
 
           <div class="d-flex justify-content-between align-items-center">
             <div>
@@ -123,6 +166,103 @@
 
   <script type="text/javascript">
       $(document).ready(function () {
+        // Initialize tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        // Handle image preview and table row creation
+        function addImageToTable(file, description = '') {
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            const rowId = 'img-' + Date.now();
+            const previewUrl = e.target.result;
+            
+            // Create a new row in the table
+            const newRow = `
+              <tr id="${rowId}">
+                <td class="align-middle">
+                  <img src="${previewUrl}" alt="Preview" style="max-width: 100px; max-height: 60px;" class="img-thumbnail">
+                </td>
+                <td class="align-middle">
+                  ${description || '<span class="text-muted">No description</span>'}
+                </td>
+                <td class="align-middle">
+                  <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </td>
+              </tr>`;
+            
+            // Create a container for the form inputs (hidden from view)
+            const formInputs = `
+              <div class="d-none">
+                <input type="file" name="images" class="d-none" data-row-id="${rowId}">
+                <input type="text" name="imageDescriptions" value="${description}" data-row-id="${rowId}">
+              </div>
+            `;
+            
+            // Add the row to the table
+            $('#imageTableBody').prepend(newRow);
+            
+            // Add the form inputs to the form
+            $('#medicalHistoryForm').append(formInputs);
+            
+            // Set the file data to the hidden input using DataTransfer
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            $(`input[name="images"][data-row-id="${rowId}"]`)[0].files = dataTransfer.files;
+            
+            // Show the table if it was hidden
+            if ($('#imageTableContainer').is(':hidden')) {
+              $('#imageTableContainer').fadeIn();
+            }
+            
+            // Clear the form
+            $('#imageInput').val('');
+            $('.custom-file-label').text('Choose image');
+            $('#imageDescription').val('');
+          };
+          
+          reader.readAsDataURL(file);
+        }
+        
+        // Handle Add Image button click
+        $('#addImageBtn').on('click', function() {
+          const fileInput = document.getElementById('imageInput');
+          const description = $('#imageDescription').val().trim();
+          
+          if (fileInput.files.length === 0) {
+            alert('Please select an image file');
+            return;
+          }
+          
+          addImageToTable(fileInput.files[0], description);
+        });
+        
+        // Handle file input change to update the label
+        $('#imageInput').on('change', function() {
+          const fileName = $(this).val().split('\\').pop();
+          $(this).next('.custom-file-label').addClass('selected').html(fileName || 'Choose image');
+        });
+        
+        // Handle remove row button
+        $(document).on('click', '.btn-remove-row', function() {
+            const row = $(this).closest('tr');
+            const rowId = row.attr('id');
+            
+            // Remove the corresponding form inputs
+            $(`[data-row-id="${rowId}"]`).closest('div').remove();
+            
+            // Remove the row with animation
+            row.fadeOut(300, function() {
+                row.remove();
+                // Hide the table if no images left
+                if ($('#imageTableBody tr').length === 0) {
+                    $('#imageTableContainer').fadeOut();
+                }
+            });
+        });
+        
         // Cancel -> back to medical history list
         $("#btnCancel").on("click", function () {
           window.location = "[[@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}]]";
@@ -136,7 +276,37 @@
 
         $("#yesSaveBtn").on("click", function () {
           $("#saveConfirmModal").modal('hide');
-          $("#medicalHistoryForm").trigger('submit');
+          
+          // Submit the form programmatically to ensure all files are included
+          const form = document.getElementById('medicalHistoryForm');
+          const formData = new FormData(form);
+          
+          // Add any additional data if needed
+          formData.append('petId', '${pet.id}');
+          formData.append('customerId', '${customer.id}');
+          
+          // Submit the form with the FormData
+          fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'  // For CSRF protection
+            }
+          })
+          .then(response => {
+            if (response.redirected) {
+              window.location.href = response.url;
+            } else {
+              return response.text().then(text => {
+                // Handle non-redirect responses if needed
+                console.log('Form submission response:', text);
+              });
+            }
+          })
+          .catch(error => {
+            console.error('Error submitting form:', error);
+            alert('An error occurred while saving. Please try again.');
+          });
         });
 
         // Delete confirmation
