@@ -20,7 +20,6 @@ public class MedicalHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-  
 
     @ManyToOne
     @JoinColumn(name = "pet_id", nullable = false)
@@ -31,8 +30,8 @@ public class MedicalHistory {
     private String report;
 
     @Lob
-    @Column(name = "images_json", columnDefinition = "TEXT")
-    private String imagesJson;
+    @Column(name = "attachments", columnDefinition = "TEXT")
+    private String attachments;
 
     @Column(updatable=false)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -96,50 +95,16 @@ public class MedicalHistory {
         this.updated = updated;
     }
 
-    public String getImagesJson() {
-        return imagesJson;
+    public String getAttachments() {
+        return attachments;
     }
 
-    public void setImagesJson(String imagesJson) {
-        this.imagesJson = imagesJson;
+    public void setAttachments(String attachments) {
+        this.attachments = attachments;
     }
 
-    @Transient
-    public List<MedicalImageDto> getImages() {
-        if (this.imagesJson == null || this.imagesJson.trim().isEmpty()) {
-            return new ArrayList<>();
-        }
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(this.imagesJson, new TypeReference<List<MedicalImageDto>>() {});
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    @Transient
-    public void setImages(List<MedicalImageDto> images) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            this.imagesJson = mapper.writeValueAsString(images);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            this.imagesJson = "[]";
-        }
-    }
-
-    @Transient
-    public void addImage(MedicalImageDto image) {
-        List<MedicalImageDto> images = getImages();
-        images.add(image);
-        setImages(images);
-    }
-
-    @Override
     public String toString() {
-        return "PetHistory [id=" + id + ", pet=" + pet + ", report=" + report + ", created=" + created + ", updated="
+        return "MedicalHistory [id=" + id + ", pet=" + pet + ", report=" + report + ", created=" + created + ", updated="
                 + updated + "]";
-    }
-     
+    };
 }

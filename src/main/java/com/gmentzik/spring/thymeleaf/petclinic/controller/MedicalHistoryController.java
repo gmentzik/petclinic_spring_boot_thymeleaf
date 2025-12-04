@@ -1,6 +1,5 @@
 package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +21,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
 import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalHistory;
-import com.gmentzik.spring.thymeleaf.petclinic.dto.MedicalImageDto;
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
 import com.gmentzik.spring.thymeleaf.petclinic.repository.MedicalHistoryRepository;
 import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
-import com.gmentzik.spring.thymeleaf.petclinic.common.enums.ImageType;
 import com.gmentzik.spring.thymeleaf.petclinic.service.FileStorageService;
 import com.gmentzik.spring.thymeleaf.petclinic.service.MedicalHistoryService;
 
@@ -150,8 +147,8 @@ public class MedicalHistoryController {
             @PathVariable("cId") Integer urlCustomerId,
             @PathVariable("pId") Integer petId,
             Model model,
-            @RequestParam(value = "images", required = false) List<MultipartFile> files,
-            @RequestParam(value = "descriptions", required = false) List<String> descriptions,
+            @RequestParam(required = false) List<MultipartFile> images,
+            @RequestParam(required = false) List<String> descriptions,
             RedirectAttributes redirectAttributes) {
         try {
             System.out.println("SAVE MEDICAL HISTORY REPORT");
