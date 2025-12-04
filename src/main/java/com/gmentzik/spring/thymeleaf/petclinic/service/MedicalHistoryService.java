@@ -16,7 +16,7 @@ public class MedicalHistoryService {
     return medicalHistoryRepository.findById(id).orElse(null);
   }
 
-  public MedicalHistory saveMeddicalHistory(MedicalHistory medicalHistory) {
+  public MedicalHistory saveMedicalHistory(MedicalHistory medicalHistory) {
     return medicalHistoryRepository.save(medicalHistory);
   }
 

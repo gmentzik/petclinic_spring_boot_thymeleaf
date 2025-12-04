@@ -13,11 +13,11 @@ import java.net.URLConnection;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
+import com.gmentzik.spring.thymeleaf.petclinic.common.enums.ImageType;
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
 import com.gmentzik.spring.thymeleaf.petclinic.repository.CustomerRepository;
 import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
 import com.gmentzik.spring.thymeleaf.petclinic.service.FileStorageService;
-import com.gmentzik.spring.thymeleaf.petclinic.utils.ImageType;
 
 @Controller
 public class PetController {
@@ -27,6 +27,9 @@ public class PetController {
 
     @Autowired
     private PetService petService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     // Delete pet and redirect to customer pets list
     @GetMapping("/pets/delete/{id}")
@@ -63,8 +66,6 @@ public class PetController {
 
     // Save new pet or edit existing pet 
     // and redirect to customer pets listS
-    @Autowired
-    private FileStorageService fileStorageService;
 
     @PostMapping("/customers/{id}/pets/save")
     public String savePet(
