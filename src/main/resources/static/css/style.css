@@ -129,3 +129,45 @@ td.note-col .note-preview {
 .actions-cell a + a {
   margin-left: 4px; /* 2px gap between action icons */
 }
+
+/* Image Modal Styles */
+.modal.image-preview .modal-dialog {
+  max-width: 650px;
+  margin: 1.75rem auto;
+}
+
+.modal.image-preview .modal-content {
+  border: none;
+  border-radius: 0.3rem;
+}
+
+.modal.image-preview .modal-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal.image-preview .modal-body {
+  padding: 1rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal.image-preview .modal-body img {
+  max-width: 100%;
+  height: auto;
+  max-height: 60vh;
+  object-fit: contain;
+}
+
+.modal.image-preview .modal-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #dee2e6;
+  justify-content: space-between;
+}
+
+/* Make sure modal is centered vertically */
+.modal-dialog-centered {
+  min-height: calc(100% - 3.5rem);
+  display: flex;
+  align-items: center;
+}

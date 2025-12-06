@@ -137,18 +137,66 @@
               <div class="attachments mt-3" th:if="${history.attachmentFiles != null and !history.attachmentFiles.isEmpty()}">
                 <h6>Attachments:</h6>
                 <div class="d-flex flex-wrap">
-                  <div th:each="attachment : ${history.attachmentFiles}" class="mr-3 mb-3 text-center" style="width: 120px;">
-                    <a th:href="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
-                       target="_blank"
-                       class="d-block mb-1">
+                  <div th:each="attachment : ${history.attachmentFiles}" class="mr-3 mb-3 text-center" style="width: 140px;">
+                    <!-- Image that opens modal -->
+                    <a href="#" 
+                       class="d-block mb-1"
+                       data-toggle="modal" 
+                       th:data-target="'#imageModal' + ${history.id} + '-' + ${attachment.id}">
                       <img th:src="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
                            class="img-thumbnail" 
-                           style="width: 100px; height: 100px; object-fit: cover;" 
+                           style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" 
                            th:alt="${attachment.description} ?: 'Attachment'">
                     </a>
-                    <div class="small text-muted" style="height: 2.5em; overflow: hidden; text-overflow: ellipsis;" 
+                    <!-- Description -->
+                    <div class="small text-muted mb-1" style="height: 2.5em; overflow: hidden; text-overflow: ellipsis;" 
                          th:title="${attachment.description}" 
                          th:text="${attachment.description} ?: 'No description'">
+                    </div>
+                    <!-- Download Button -->
+                    <a th:href="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
+                       class="btn btn-sm btn-outline-primary w-100"
+                       download>
+                      <i class="fas fa-download"></i> Download
+                    </a>
+                    
+                    <!-- Image Modal -->
+                    <div class="modal fade image-preview" 
+                         th:id="'imageModal' + ${history.id} + '-' + ${attachment.id}" 
+                         tabindex="-1" 
+                         role="dialog" 
+                         aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title small" th:text="${attachment.description} ?: 'Image'"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body p-0">
+                            <div class="text-center">
+                              <img th:src="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
+                                   class="img-fluid" 
+                                   th:alt="${attachment.description} ?: 'Attachment'">
+                            </div>
+                            <div class="p-3 border-top" th:if="${attachment.description != null and !attachment.description.isEmpty()}">
+                              <p class="mb-0 text-muted" th:text="${attachment.description}"></p>
+                            </div>
+                          </div>
+                          <div class="modal-footer py-2">
+                            <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">
+                              <i class="fas fa-times"></i> Close
+                            </button>
+                            <a th:href="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
+                               class="btn btn-sm btn-primary"
+                               download
+                               th:download="${attachment.fileName}">
+                              <i class="fas fa-download"></i> Download
+                            </a>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
