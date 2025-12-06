@@ -3,15 +3,14 @@ package com.gmentzik.spring.thymeleaf.petclinic.entity;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gmentzik.spring.thymeleaf.petclinic.dto.MedicalImageDto;
 
 @Entity
 @Table(name = "medical_history")
@@ -29,26 +28,26 @@ public class MedicalHistory {
     @Column(name = "report", columnDefinition = "TEXT")
     private String report;
 
-    @Lob
-    @Column(name = "attachments", columnDefinition = "TEXT")
-    private String attachments;
+
+    @OneToMany(mappedBy = "medicalHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MedicalAttachment> attachmentFiles = new HashSet<>();
 
     @Column(updatable=false)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	LocalDate created;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	LocalDate updated;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate created;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate updated;
 
-	// OnCreate, OnUpdate
-	@PrePersist
-	public void onCreate() {  
-		 this.created = LocalDate.now(ZoneOffset.UTC);
-	}
-	
-	@PreUpdate
-	public void onUpdate() {   
-		 this.updated = LocalDate.now(ZoneOffset.UTC);
-	}
+    // OnCreate, OnUpdate
+    @PrePersist
+    public void onCreate() {  
+        this.created = LocalDate.now(ZoneOffset.UTC);
+    }
+    
+    @PreUpdate
+    public void onUpdate() {   
+        this.updated = LocalDate.now(ZoneOffset.UTC);
+    }
 
     public Integer getId() {
         return id;
@@ -95,16 +94,45 @@ public class MedicalHistory {
         this.updated = updated;
     }
 
-    public String getAttachments() {
-        return attachments;
+    // Attachment management methods
+    public Set<MedicalAttachment> getAttachmentFiles() {
+        return attachmentFiles;
     }
 
-    public void setAttachments(String attachments) {
-        this.attachments = attachments;
+    public void setAttachmentFiles(Set<MedicalAttachment> attachmentFiles) {
+        this.attachmentFiles = attachmentFiles;
     }
-
+    
+    public void addAttachment(MedicalAttachment attachment) {
+        attachmentFiles.add(attachment);
+        attachment.setMedicalHistory(this);
+    }
+    
+    public void removeAttachment(MedicalAttachment attachment) {
+        attachmentFiles.remove(attachment);
+        attachment.setMedicalHistory(null);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MedicalHistory that = (MedicalHistory) o;
+        return Objects.equals(id, that.id);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+    
+    @Override
     public String toString() {
-        return "MedicalHistory [id=" + id + ", pet=" + pet + ", report=" + report + ", created=" + created + ", updated="
-                + updated + "]";
-    };
+        return "MedicalHistory{" +
+                "id=" + id +
+                ", pet=" + (pet != null ? pet.getId() : null) +
+                ", created=" + created +
+                ", updated=" + updated +
+                '}';
+    }
 }

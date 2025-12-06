@@ -1,37 +1,43 @@
 package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
-import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalHistory;
-import com.gmentzik.spring.thymeleaf.petclinic.common.enums.ImageType;
-import com.gmentzik.spring.thymeleaf.petclinic.dto.MedicalImageDto;
-import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
 import com.gmentzik.spring.thymeleaf.petclinic.repository.MedicalHistoryRepository;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalHistory;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
+import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalAttachment;
+import com.gmentzik.spring.thymeleaf.petclinic.common.enums.ImageType;
 import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
 import com.gmentzik.spring.thymeleaf.petclinic.service.FileStorageService;
 import com.gmentzik.spring.thymeleaf.petclinic.service.MedicalHistoryService;
+import com.gmentzik.spring.thymeleaf.petclinic.service.MedicalAttachmentService;
 
 @Controller
 public class MedicalHistoryController {
@@ -47,6 +53,9 @@ public class MedicalHistoryController {
 
     @Autowired
     private FileStorageService fileStorageService;
+    
+    @Autowired
+    private MedicalAttachmentService attachmentService;
 
     @GetMapping("/customers/{cId}/pets/{petId}/medicalhistory")
     public String getAuthorMedicalHistory(
@@ -148,6 +157,7 @@ public class MedicalHistoryController {
     }
 
     @PostMapping("/customers/{cId}/pets/{pId}/medicalhistoryrecord/save")
+    @Transactional
     public String saveMedicalRecord(
             @ModelAttribute MedicalHistory mhr,
             @PathVariable("cId") Integer urlCustomerId,
@@ -157,74 +167,53 @@ public class MedicalHistoryController {
             @RequestParam(name = "descriptions", required = false) List<String> descriptions,
             RedirectAttributes redirectAttributes) {
         try {
-            System.out.println("SAVE MEDICAL HISTORY REPORT");
-            System.out.println(mhr);
-            System.out.println("Files size: " + files.size());
-            System.out.println("Files descriptions size: " + descriptions.size());
-
             // Set the pet for the medical history
             Pet pet = petsService.getPetById(petId);
             mhr.setPet(pet);
 
             // Process uploaded files if any
-            if (files.size() != descriptions.size()) {
-                // Handle error: mismatch in data integrity
-                System.err.println("Error: Image and description lists are not the same size.");
-            }
-
             if (files != null && !files.isEmpty()) {
-                List<MedicalImageDto> medicalImages = new ArrayList<>();
+                if (descriptions == null || files.size() != descriptions.size()) {
+                    redirectAttributes.addFlashAttribute("error", "Number of files and descriptions must match");
+                    return "redirect:/customers/" + urlCustomerId + "/pets/" + petId + "/medicalhistory";
+                }
 
                 for (int i = 0; i < files.size(); i++) {
                     MultipartFile file = files.get(i);
                     if (file != null && !file.isEmpty()) {
-                        String description = (descriptions != null && i < descriptions.size()) ? descriptions.get(i)
-                                : "";
-
+                        String description = descriptions.get(i);
                         try {
                             // Store the file and get the filename
                             String fileName = fileStorageService.storeFile(file, petId, ImageType.MEDICAL_HISTORY);
-
-                            // Create and add the medical image DTO
-                            MedicalImageDto imageDto = new MedicalImageDto();
-                            imageDto.setImageName(fileName);
-                            imageDto.setImageDescription(description);
-                            medicalImages.add(imageDto);
+                            
+                            // Create and add the medical attachment
+                            MedicalAttachment attachment = new MedicalAttachment();
+                            attachment.setFileName(fileName);
+                            attachment.setDescription(description);
+                            attachment.setFileType(file.getContentType());
+                            mhr.addAttachment(attachment);
                         } catch (Exception e) {
-                            // Log the error but don't fail the entire operation
                             e.printStackTrace();
+                            redirectAttributes.addFlashAttribute("error", 
+                                "Error processing file " + file.getOriginalFilename() + ": " + e.getMessage());
                         }
-                    }
-                }
-
-                // Convert the list of images to JSON and store in the attachments field
-                if (!medicalImages.isEmpty()) {
-                    try {
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        String attachmentsJson = objectMapper.writeValueAsString(medicalImages);
-                        System.out.println("attachmentsJson: " + attachmentsJson);
-                        mhr.setAttachments(attachmentsJson);
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                        redirectAttributes.addFlashAttribute("error",
-                                "Error processing image attachments: " + e.getMessage());
                     }
                 }
             }
 
-            // Save medical record
+            // Save medical record (which will cascade save the attachments)
             medicalHistoryService.saveMedicalHistory(mhr);
-
             redirectAttributes.addFlashAttribute("message", "Report has been saved successfully!");
             return "redirect:/customers/" + urlCustomerId + "/pets/" + petId + "/medicalhistory";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to save medical record: " + e.getMessage());
             e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Failed to save medical record: " + e.getMessage());
             return "redirect:/customers/" + urlCustomerId + "/pets/" + petId + "/medicalhistory";
         }
     }
 
     @GetMapping("/medicalhistory/delete/{id}")
+    @Transactional
     public String deleteMedicalHistory(
             @PathVariable("id") Integer recordId,
             RedirectAttributes redirectAttributes) {
@@ -235,16 +224,51 @@ public class MedicalHistoryController {
                 redirectAttributes.addFlashAttribute("message", "Medical history record not found: " + recordId);
                 return "redirect:/customers";
             }
-            Pet pet = mhr.gePet();
+            Pet pet = mhr.getPet();
             Customer customer = pet.getCustomer();
 
+            // Delete the medical history (which will cascade delete attachments)
             medicalHistoryService.deleteMedicalHistory(recordId);
             redirectAttributes.addFlashAttribute("message", "Medical history record deleted successfully.");
 
             return "redirect:/customers/" + customer.getId() + "/pets/" + pet.getId() + "/medicalhistory";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Failed to delete medical record: " + e.getMessage());
             return "redirect:/customers";
+        }
+    }
+    
+    @GetMapping("/medicalhistory/{id}/attachments/{attachmentId}/download")
+    public ResponseEntity<Resource> downloadAttachment(
+            @PathVariable("id") Integer medicalHistoryId,
+            @PathVariable("attachmentId") Long attachmentId) {
+        try {
+            // Verify the attachment exists and belongs to the specified medical history
+            MedicalAttachment attachment = attachmentService.getAttachmentById(attachmentId)
+                .orElseThrow(() -> new RuntimeException("Attachment not found"));
+                
+            if (!attachment.getMedicalHistory().getId().equals(medicalHistoryId)) {
+                throw new RuntimeException("Attachment does not belong to the specified medical record");
+            }
+            
+            // Load the file as a resource
+            Resource file = fileStorageService.loadFileAsResource(attachment.getFileName());
+            
+            // Determine content type
+            String contentType = attachment.getFileType() != null ? 
+                attachment.getFileType() : "application/octet-stream";
+            
+            // Return the file for download
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, 
+                           "attachment; filename=\"" + attachment.getFileName() + "\"")
+                    .body(file);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                org.springframework.http.HttpStatus.NOT_FOUND, 
+                "File not found: " + e.getMessage(), e);
         }
     }
 
