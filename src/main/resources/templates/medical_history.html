@@ -131,13 +131,33 @@
             </div>
             <!-- Right: 80% -->
             <div class="mb-2" style="flex: 0 0 80%; max-width: 80%;">
-              <div class="report" style="white-space: pre-wrap;">[[${history.report}]]</div>
+              <div class="report mb-2" style="white-space: pre-wrap;">[[${history.report}]]</div>
+              
+              <!-- Attached Images -->
+              <div class="attachments mt-3" th:if="${history.attachmentFiles != null and !history.attachmentFiles.isEmpty()}">
+                <h6>Attachments:</h6>
+                <div class="d-flex flex-wrap">
+                  <div th:each="attachment : ${history.attachmentFiles}" class="mr-3 mb-3 text-center" style="width: 120px;">
+                    <a th:href="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
+                       target="_blank"
+                       class="d-block mb-1">
+                      <img th:src="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
+                           class="img-thumbnail" 
+                           style="width: 100px; height: 100px; object-fit: cover;" 
+                           th:alt="${attachment.description} ?: 'Attachment'">
+                    </a>
+                    <div class="small text-muted" style="height: 2.5em; overflow: hidden; text-overflow: ellipsis;" 
+                         th:title="${attachment.description}" 
+                         th:text="${attachment.description} ?: 'No description'">
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
     <div th:unless="${medicalHistoryList != null and medicalHistoryList.size() > 0}">
       <span>No Medical History found!</span>
     </div>
