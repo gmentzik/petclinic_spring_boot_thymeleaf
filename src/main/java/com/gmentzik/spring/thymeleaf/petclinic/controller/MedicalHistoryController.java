@@ -1,8 +1,11 @@
 package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,12 +18,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
 import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalHistory;
+import com.gmentzik.spring.thymeleaf.petclinic.common.enums.ImageType;
+import com.gmentzik.spring.thymeleaf.petclinic.dto.MedicalImageDto;
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
 import com.gmentzik.spring.thymeleaf.petclinic.repository.MedicalHistoryRepository;
 import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
@@ -147,48 +153,64 @@ public class MedicalHistoryController {
             @PathVariable("cId") Integer urlCustomerId,
             @PathVariable("pId") Integer petId,
             Model model,
-            @RequestParam(required = false) List<MultipartFile> images,
-            @RequestParam(required = false) List<String> descriptions,
+            @RequestPart(name = "images", required = false) List<MultipartFile> files,
+            @RequestParam(name = "descriptions", required = false) List<String> descriptions,
             RedirectAttributes redirectAttributes) {
         try {
             System.out.println("SAVE MEDICAL HISTORY REPORT");
             System.out.println(mhr);
+            System.out.println("Files size: " + files.size());
+            System.out.println("Files descriptions size: " + descriptions.size());
 
             // Set the pet for the medical history
             Pet pet = petsService.getPetById(petId);
             mhr.setPet(pet);
 
-            // // Process uploaded files if any
-            // if (files != null && files.size() > 0) {
-            //     List<MedicalImageDto> images = new ArrayList<>();
-                
-            //     for (int i = 0; i < files.size(); i++) {
-            //         MultipartFile file = files[i];
-            //         if (file != null && !file.isEmpty()) {
-            //             String description = (descriptions != null && i < descriptions.length) ? 
-            //                     descriptions[i] : "";
-                        
-            //             try {
-            //                 // Store the file and get the filename
-            //                 String fileName = fileStorageService.storeFile(file, petId, ImageType.MEDICAL_HISTORY);
-                            
-            //                 // Create and add the medical image DTO
-            //                 MedicalImageDto imageDto = new MedicalImageDto();
-            //                 imageDto.setImageName(fileName);
-            //                 imageDto.setImageDescription(description);
-            //                 images.add(imageDto);
-            //             } catch (Exception e) {
-            //                 // Log the error but don't fail the entire operation
-            //                 e.printStackTrace();
-            //             }
-            //         }
-            //     }
-                
-                // // Only set images if we have any
-                // if (!images.isEmpty()) {
-                //     mhr.setImages(images);
-                // }
-            // }
+            // Process uploaded files if any
+            if (files.size() != descriptions.size()) {
+                // Handle error: mismatch in data integrity
+                System.err.println("Error: Image and description lists are not the same size.");
+            }
+
+            if (files != null && !files.isEmpty()) {
+                List<MedicalImageDto> medicalImages = new ArrayList<>();
+
+                for (int i = 0; i < files.size(); i++) {
+                    MultipartFile file = files.get(i);
+                    if (file != null && !file.isEmpty()) {
+                        String description = (descriptions != null && i < descriptions.size()) ? descriptions.get(i)
+                                : "";
+
+                        try {
+                            // Store the file and get the filename
+                            String fileName = fileStorageService.storeFile(file, petId, ImageType.MEDICAL_HISTORY);
+
+                            // Create and add the medical image DTO
+                            MedicalImageDto imageDto = new MedicalImageDto();
+                            imageDto.setImageName(fileName);
+                            imageDto.setImageDescription(description);
+                            medicalImages.add(imageDto);
+                        } catch (Exception e) {
+                            // Log the error but don't fail the entire operation
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                // Convert the list of images to JSON and store in the attachments field
+                if (!medicalImages.isEmpty()) {
+                    try {
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        String attachmentsJson = objectMapper.writeValueAsString(medicalImages);
+                        System.out.println("attachmentsJson: " + attachmentsJson);
+                        mhr.setAttachments(attachmentsJson);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        redirectAttributes.addFlashAttribute("error",
+                                "Error processing image attachments: " + e.getMessage());
+                    }
+                }
+            }
 
             // Save medical record
             medicalHistoryService.saveMedicalHistory(mhr);
