@@ -2,6 +2,7 @@ package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -20,7 +21,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,7 +53,7 @@ public class MedicalHistoryController {
 
     @Autowired
     private FileStorageService fileStorageService;
-    
+
     @Autowired
     private MedicalAttachmentService attachmentService;
 
@@ -166,15 +166,34 @@ public class MedicalHistoryController {
             @RequestPart(name = "images", required = false) List<MultipartFile> files,
             @RequestParam(name = "descriptions", required = false) List<String> descriptions,
             RedirectAttributes redirectAttributes) {
+
         try {
+            System.out.println("SAVE MEDICAL HISTORY REPORT");
+            System.out.println(mhr);
+            System.out.println("Number of attachments: " + files.size());
+            System.out.println("Number of descriptions: " + descriptions.size());
+
+            if (mhr.getId() == null) {
+                System.out.println("NEW MEDICAL HISTORY REPORT");
+            } else {
+                System.out.println("EDIT MEDICAL RECORD");
+            }
             // Set the pet for the medical history
             Pet pet = petsService.getPetById(petId);
             mhr.setPet(pet);
 
+            // In your saveMedicalRecord method, before processing files:
+            if (files != null) {
+                // Filter out empty files
+                files = files.stream()
+                        .filter(file -> file != null && !file.isEmpty())
+                        .collect(Collectors.toList());
+            }
+            
             // Process uploaded files if any
-            if (files != null && !files.isEmpty()) {
+            if (!files.isEmpty()) {
                 if (descriptions == null || files.size() != descriptions.size()) {
-                    redirectAttributes.addFlashAttribute("error", "Number of files and descriptions must match");
+                    redirectAttributes.addFlashAttribute("message", "Number of files and descriptions must match");
                     return "redirect:/customers/" + urlCustomerId + "/pets/" + petId + "/medicalhistory";
                 }
 
@@ -185,7 +204,7 @@ public class MedicalHistoryController {
                         try {
                             // Store the file and get the filename
                             String fileName = fileStorageService.storeFile(file, petId, ImageType.MEDICAL_HISTORY);
-                            
+
                             // Create and add the medical attachment
                             MedicalAttachment attachment = new MedicalAttachment();
                             attachment.setFileName(fileName);
@@ -194,20 +213,19 @@ public class MedicalHistoryController {
                             mhr.addAttachment(attachment);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            redirectAttributes.addFlashAttribute("error", 
-                                "Error processing file " + file.getOriginalFilename() + ": " + e.getMessage());
+                            redirectAttributes.addAttribute("message",
+                                    "Error processing file " + file.getOriginalFilename() + ": " + e.getMessage());
                         }
                     }
                 }
             }
-
             // Save medical record (which will cascade save the attachments)
             medicalHistoryService.saveMedicalHistory(mhr);
-            redirectAttributes.addFlashAttribute("message", "Report has been saved successfully!");
+            redirectAttributes.addAttribute("message", "Report has been saved successfully!");
             return "redirect:/customers/" + urlCustomerId + "/pets/" + petId + "/medicalhistory";
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Failed to save medical record: " + e.getMessage());
+            redirectAttributes.addAttribute("error", "Failed to save medical record: " + e.getMessage());
             return "redirect:/customers/" + urlCustomerId + "/pets/" + petId + "/medicalhistory";
         }
     }
@@ -238,7 +256,7 @@ public class MedicalHistoryController {
             return "redirect:/customers";
         }
     }
-    
+
     @GetMapping("/medicalhistory/{id}/attachments/{attachmentId}/download")
     public ResponseEntity<Resource> downloadAttachment(
             @PathVariable("id") Integer medicalHistoryId,
@@ -246,29 +264,29 @@ public class MedicalHistoryController {
         try {
             // Verify the attachment exists and belongs to the specified medical history
             MedicalAttachment attachment = attachmentService.getAttachmentById(attachmentId)
-                .orElseThrow(() -> new RuntimeException("Attachment not found"));
-                
+                    .orElseThrow(() -> new RuntimeException("Attachment not found"));
+
             if (!attachment.getMedicalHistory().getId().equals(medicalHistoryId)) {
                 throw new RuntimeException("Attachment does not belong to the specified medical record");
             }
-            
+
             // Load the file as a resource
             Resource file = fileStorageService.loadFileAsResource(attachment.getFileName());
-            
+
             // Determine content type
-            String contentType = attachment.getFileType() != null ? 
-                attachment.getFileType() : "application/octet-stream";
-            
+            String contentType = attachment.getFileType() != null ? attachment.getFileType()
+                    : "application/octet-stream";
+
             // Return the file for download
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, 
-                           "attachment; filename=\"" + attachment.getFileName() + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + attachment.getFileName() + "\"")
                     .body(file);
         } catch (Exception e) {
             throw new ResponseStatusException(
-                org.springframework.http.HttpStatus.NOT_FOUND, 
-                "File not found: " + e.getMessage(), e);
+                    org.springframework.http.HttpStatus.NOT_FOUND,
+                    "File not found: " + e.getMessage(), e);
         }
     }
 
