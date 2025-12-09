@@ -12,26 +12,31 @@ import com.gmentzik.spring.thymeleaf.petclinic.repository.MedicalAttachmentRepos
 
 @Service
 public class MedicalAttachmentService {
-    
+
     @Autowired
     private MedicalAttachmentRepository attachmentRepository;
-    
+
     public List<MedicalAttachment> getAttachmentsByMedicalHistoryId(Integer medicalHistoryId) {
         return attachmentRepository.findByMedicalHistoryId(medicalHistoryId);
     }
-    
+
     public MedicalAttachment saveAttachment(MedicalAttachment attachment) {
         return attachmentRepository.save(attachment);
     }
-    
+
     public Optional<MedicalAttachment> getAttachmentById(Long id) {
         return attachmentRepository.findById(id);
     }
-    
+
     public void deleteAttachment(MedicalAttachment attachment) {
         attachmentRepository.delete(attachment);
     }
-    
+
+    @Transactional
+    public void deleteAttachment(Long attachmentId) {
+        attachmentRepository.deleteById(attachmentId);
+    }
+
     @Transactional
     public void deleteAttachmentsByMedicalHistoryId(Integer medicalHistoryId) {
         attachmentRepository.deleteByMedicalHistoryId(medicalHistoryId);

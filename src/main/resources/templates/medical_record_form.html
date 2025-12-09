@@ -54,8 +54,56 @@
           </div>
 
           <!-- Images Section -->
+          <!-- Edit existing Images -->
+          <div class="attachments mt-3" th:if="*{attachmentFiles != null and !attachmentFiles.isEmpty()}">
+            <h6>Existing Attachments:</h6>
+            <div class="d-flex flex-wrap">
+              <div th:each="attachment : *{attachmentFiles}" class="mr-3 mb-3 text-center" style="width: 140px;">
+                <!-- Image that opens modal -->
+                <a href="#" class="d-block mb-1" data-toggle="modal"
+                  th:data-target="'#imageModal' + ${medicalhistory.id} + '-' + ${attachment.id}">
+                  <img
+                    th:src="@{'/medicalhistory/' + ${medicalhistory.id} + '/attachments/' + ${attachment.id} + '/download'}"
+                    class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;"
+                    th:alt="${attachment.description} ?: 'Attachment'">
+                </a>
+                <!-- Description -->
+                <div class="small text-muted mb-1" style="height: 2.5em; overflow: hidden; text-overflow: ellipsis;"
+                  th:title="${attachment.description}" th:text="${attachment.description} ?: 'No description'">
+                </div>
+                <!-- Delete Button -->
+                <button type="button" class="btn btn-sm btn-outline-danger delete-attachment w-100"
+                  th:data-attachment-id="${attachment.id}">
+                  <i class="fa fa-trash"></i> Delete
+                </button>
+              </div>
+            </div>
+            <!-- Image Preview Modals -->
+            <div th:each="attachment : *{attachmentFiles}">
+              <div class="modal fade" th:id="'imageModal' + ${medicalhistory.id} + '-' + ${attachment.id}" tabindex="-1"
+                role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" th:text="${attachment.description} ?: 'Attachment'"></h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body text-center">
+                      <img
+                        th:src="@{'/medicalhistory/' + ${medicalhistory.id} + '/attachments/' + ${attachment.id} + '/download'}"
+                        class="img-fluid" style="max-height: 70vh;" th:alt="${attachment.description} ?: 'Attachment'">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add New Images -->
           <div class="form-group row">
-            <label class="col-sm-3 col-form-label">Attachments</label>
+            <label class="col-sm-3 col-form-label">New Attachments</label>
             <small class="form-text text-muted">You can upload multiple images. Each can have an optional
               description.</small>
             <div class="col-sm-9">
