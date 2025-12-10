@@ -1,7 +1,9 @@
 package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +15,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -189,7 +194,7 @@ public class MedicalHistoryController {
                         .filter(file -> file != null && !file.isEmpty())
                         .collect(Collectors.toList());
             }
-            
+
             // Process uploaded files if any
             if (!files.isEmpty()) {
                 if (descriptions == null || files.size() != descriptions.size()) {
@@ -287,6 +292,36 @@ public class MedicalHistoryController {
             throw new ResponseStatusException(
                     org.springframework.http.HttpStatus.NOT_FOUND,
                     "File not found: " + e.getMessage(), e);
+        }
+    }
+
+    @DeleteMapping("medicalhistory/attachments/{attachmentId}")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<?> deleteAttachment(
+            @PathVariable("attachmentId") Long attachmentId) {
+        try {
+            // Verify the attachment exists
+            MedicalAttachment attachment = attachmentService.getAttachmentById(attachmentId)
+                    .orElseThrow(() -> new RuntimeException("Attachment not found with id: " + attachmentId));
+
+            // Delete the physical file
+            fileStorageService.deleteFile(attachment.getFileName());
+
+            // Delete the attachment from database
+            attachmentService.deleteAttachment(attachmentId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Attachment deleted successfully");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to delete attachment: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
