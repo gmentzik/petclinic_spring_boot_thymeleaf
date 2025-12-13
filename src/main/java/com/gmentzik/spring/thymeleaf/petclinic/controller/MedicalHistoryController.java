@@ -182,6 +182,12 @@ public class MedicalHistoryController {
                 System.out.println("NEW MEDICAL HISTORY REPORT");
             } else {
                 System.out.println("EDIT MEDICAL RECORD");
+                // Load the existing record with its attachments
+                MedicalHistory existingRecord = medicalHistoryService.getMedicalHistoryById(mhr.getId());
+                if (existingRecord != null) {
+                    // Copy the existing attachments to our updated record
+                    mhr.getAttachmentFiles().addAll(existingRecord.getAttachmentFiles());
+                }
             }
             // Set the pet for the medical history
             Pet pet = petsService.getPetById(petId);
@@ -218,7 +224,7 @@ public class MedicalHistoryController {
                             mhr.addAttachment(attachment);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            redirectAttributes.addAttribute("message",
+                            redirectAttributes.addFlashAttribute("message",
                                     "Error processing file " + file.getOriginalFilename() + ": " + e.getMessage());
                         }
                     }
@@ -226,11 +232,11 @@ public class MedicalHistoryController {
             }
             // Save medical record (which will cascade save the attachments)
             medicalHistoryService.saveMedicalHistory(mhr);
-            redirectAttributes.addAttribute("message", "Report has been saved successfully!");
+            redirectAttributes.addFlashAttribute("message", "Report has been saved successfully!");
             return "redirect:/customers/" + urlCustomerId + "/pets/" + petId + "/medicalhistory";
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addAttribute("error", "Failed to save medical record: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Failed to save medical record: " + e.getMessage());
             return "redirect:/customers/" + urlCustomerId + "/pets/" + petId + "/medicalhistory";
         }
     }

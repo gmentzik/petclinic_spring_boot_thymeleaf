@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalHistory;
 import com.gmentzik.spring.thymeleaf.petclinic.repository.MedicalHistoryRepository;
-import com.gmentzik.spring.thymeleaf.petclinic.service.MedicalAttachmentService;
 
 @Service
 public class MedicalHistoryService {

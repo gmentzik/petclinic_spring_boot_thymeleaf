@@ -14,11 +14,21 @@
   <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </head>
 
-  <body>
+<body>
   <div th:replace="fragments/header :: header"></div>
 
   <div class="container-fluid">
     <h2 class="text-center">Medical History</h2>
+
+    <!-- Notification message -->
+    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
+      role="alert">
+      [[${message}]]
+      <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
     </br>
     <div class="card my-3">
       <div class="card-body">
@@ -40,20 +50,18 @@
           <div class="d-flex align-items-center">
             <!-- Pet Photo -->
             <div class="mr-3" th:if="${pet.photoFilename != null and pet.photoFilename != ''}">
-              <img th:src="@{'/pets/photo/' + ${pet.photoFilename}}" 
-                   class="img-thumbnail" 
-                   style="width: 120px; height: 120px; object-fit: cover;" 
-                   alt="Pet photo">
+              <img th:src="@{'/pets/photo/' + ${pet.photoFilename}}" class="img-thumbnail"
+                style="width: 120px; height: 120px; object-fit: cover;" alt="Pet photo">
             </div>
             <div class="mr-3" th:unless="${pet.photoFilename != null and pet.photoFilename != ''}">
-              <div class="img-thumbnail d-flex align-items-center justify-content-center" 
-                   style="width: 120px; height: 120px; background-color: #f8f9fa;">
+              <div class="img-thumbnail d-flex align-items-center justify-content-center"
+                style="width: 120px; height: 120px; background-color: #f8f9fa;">
                 <i class="fas fa-paw fa-2x text-muted"></i>
               </div>
             </div>
-            <span class="badge align-self-start" 
-                  th:classappend="${customer.active} ? ' badge-success' : ' badge-secondary'" 
-                  th:text="${customer.active} ? 'Active' : 'Inactive'">
+            <span class="badge align-self-start"
+              th:classappend="${customer.active} ? ' badge-success' : ' badge-secondary'"
+              th:text="${customer.active} ? 'Active' : 'Inactive'">
             </span>
           </div>
         </div>
@@ -69,7 +77,8 @@
             <ul class="list-unstyled mb-3">
               <li><strong>Address:</strong> <span th:text="${customer.address} ?: '-' "></span></li>
               <li><strong>City/State/ZIP:</strong>
-                <span th:text="(${customer.city} ?: '-') + ' / ' + (${customer.state} ?: '-') + ' / ' + (${customer.zipCode} ?: '-')"></span>
+                <span
+                  th:text="(${customer.city} ?: '-') + ' / ' + (${customer.state} ?: '-') + ' / ' + (${customer.zipCode} ?: '-')"></span>
               </li>
             </ul>
           </div>
@@ -80,7 +89,8 @@
           </div>
           <div class="col-md-6">
             <ul class="list-unstyled mb-0">
-              <li><strong>Pet:</strong> <span th:text="${pet.name}"></span> <small class="text-primary ml-2" th:text="'(id: ' + ${pet.id} + ')' "></small></li>
+              <li><strong>Pet:</strong> <span th:text="${pet.name}"></span> <small class="text-primary ml-2"
+                  th:text="'(id: ' + ${pet.id} + ')' "></small></li>
               <li><strong>Type:</strong> <span th:text="${pet.animalType} ?: '-' "></span></li>
               <li><strong>Breed:</strong> <span th:text="${pet.breed} ?: '-' "></span></li>
             </ul>
@@ -97,15 +107,16 @@
         </div>
       </div>
     </div>
-    
-    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message" role="alert">
+
+    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
+      role="alert">
       [[${message}]]
       <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     <!-- Add any specific content or placeholders for medical history data -->
-    
+
     <div class="my-3">
       <form th:action="@{'/medicalhistory/search'}" id="searchForm">
         <!-- Include search form fields for Medical History -->
@@ -125,47 +136,42 @@
               <div><strong>Created:</strong> [[${history.created}]]</div>
               <div><strong>Updated:</strong> [[${history.updated}]]</div>
               <div class="mt-2">
-                <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/'+ ${history.id} + '/edit'}" title="Edit this entry"
-                   class="fa-regular fa-pen-to-square icon-dark" aria-label="Edit"></a>
+                <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/'+ ${history.id} + '/edit'}"
+                  title="Edit this entry" class="fa-regular fa-pen-to-square icon-dark" aria-label="Edit"></a>
               </div>
             </div>
             <!-- Right: 80% -->
             <div class="mb-2" style="flex: 0 0 80%; max-width: 80%;">
               <div class="report mb-2" style="white-space: pre-wrap;">[[${history.report}]]</div>
-              
+
               <!-- Attached Images -->
-              <div class="attachments mt-3" th:if="${history.attachmentFiles != null and !history.attachmentFiles.isEmpty()}">
+              <div class="attachments mt-3"
+                th:if="${history.attachmentFiles != null and !history.attachmentFiles.isEmpty()}">
                 <h6>Attachments:</h6>
                 <div class="d-flex flex-wrap">
-                  <div th:each="attachment : ${history.attachmentFiles}" class="mr-3 mb-3 text-center" style="width: 140px;">
+                  <div th:each="attachment : ${history.attachmentFiles}" class="mr-3 mb-3 text-center"
+                    style="width: 140px;">
                     <!-- Image that opens modal -->
-                    <a href="#" 
-                       class="d-block mb-1"
-                       data-toggle="modal" 
-                       th:data-target="'#imageModal' + ${history.id} + '-' + ${attachment.id}">
-                      <img th:src="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
-                           class="img-thumbnail" 
-                           style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" 
-                           th:alt="${attachment.description} ?: 'Attachment'">
+                    <a href="#" class="d-block mb-1" data-toggle="modal"
+                      th:data-target="'#imageModal' + ${history.id} + '-' + ${attachment.id}">
+                      <img
+                        th:src="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}"
+                        class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;"
+                        th:alt="${attachment.description} ?: 'Attachment'">
                     </a>
                     <!-- Description -->
-                    <div class="small text-muted mb-1" style="height: 2.5em; overflow: hidden; text-overflow: ellipsis;" 
-                         th:title="${attachment.description}" 
-                         th:text="${attachment.description} ?: 'No description'">
+                    <div class="small text-muted mb-1" style="height: 2.5em; overflow: hidden; text-overflow: ellipsis;"
+                      th:title="${attachment.description}" th:text="${attachment.description} ?: 'No description'">
                     </div>
                     <!-- Download Button -->
-                    <a th:href="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
-                       class="btn btn-sm btn-outline-primary w-100"
-                       download>
+                    <a th:href="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}"
+                      class="btn btn-sm btn-outline-primary w-100" download>
                       <i class="fas fa-download"></i> Download
                     </a>
-                    
+
                     <!-- Image Modal -->
-                    <div class="modal fade image-preview" 
-                         th:id="'imageModal' + ${history.id} + '-' + ${attachment.id}" 
-                         tabindex="-1" 
-                         role="dialog" 
-                         aria-hidden="true">
+                    <div class="modal fade image-preview" th:id="'imageModal' + ${history.id} + '-' + ${attachment.id}"
+                      tabindex="-1" role="dialog" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                           <div class="modal-header">
@@ -176,11 +182,12 @@
                           </div>
                           <div class="modal-body p-0">
                             <div class="text-center">
-                              <img th:src="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
-                                   class="img-fluid" 
-                                   th:alt="${attachment.description} ?: 'Attachment'">
+                              <img
+                                th:src="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}"
+                                class="img-fluid" th:alt="${attachment.description} ?: 'Attachment'">
                             </div>
-                            <div class="p-3 border-top" th:if="${attachment.description != null and !attachment.description.isEmpty()}">
+                            <div class="p-3 border-top"
+                              th:if="${attachment.description != null and !attachment.description.isEmpty()}">
                               <p class="mb-0 text-muted" th:text="${attachment.description}"></p>
                             </div>
                           </div>
@@ -188,10 +195,8 @@
                             <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">
                               <i class="fas fa-times"></i> Close
                             </button>
-                            <a th:href="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}" 
-                               class="btn btn-sm btn-primary"
-                               download
-                               th:download="${attachment.fileName}">
+                            <a th:href="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}"
+                              class="btn btn-sm btn-primary" download th:download="${attachment.fileName}">
                               <i class="fas fa-download"></i> Download
                             </a>
                           </div>
@@ -225,16 +230,19 @@
         </li>
         <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
           th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
-          <a th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${page}, ${page}, 'Page ' + ${page})"></a>
+          <a
+            th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${page}, ${page}, 'Page ' + ${page})"></a>
         </li>
         <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
           <a class="page-link" href="#">...</a>
         </li>
         <li class="page-item font-weight-bold" th:classappend="${currentPage == totalPages} ? 'disabled'">
-          <a th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${currentPage + 1},'Next', 'Next Page')"></a>
+          <a
+            th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${currentPage + 1},'Next', 'Next Page')"></a>
         </li>
         <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-          <a th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${totalPages}, '>>', 'Last Page')"></a>
+          <a
+            th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${totalPages}, '>>', 'Last Page')"></a>
         </li>
       </ul>
     </nav>
