@@ -31,7 +31,22 @@ public class PetController {
     @Autowired
     private FileStorageService fileStorageService;
 
-    // Delete pet and redirect to customer pets list
+/**
+ * Handles the deletion of a pet by its ID and redirects to the owner's pet list.
+ * 
+ * @param id The ID of the pet to be deleted
+ * @param model Spring Model (unused in current implementation)
+ * @param redirectAttributes For passing success/error messages to the redirected view
+ * @return Redirect URL to the owner's pets list page
+ * 
+ * @implNote This method:
+ *           - Retrieves the pet by ID to get the owner's ID
+ *           - Deletes the pet using the pet service
+ *           - Provides user feedback through flash messages
+ *           - Handles exceptions and displays error messages
+ *           - Redirects to the owner's pets list after operation
+ *           - Maintains data integrity by handling related database constraints
+ */
     @GetMapping("/pets/delete/{id}")
     public String deletePet(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
         try {
@@ -47,7 +62,21 @@ public class PetController {
         }
     }
 
-    // Returns new pet form with customer data a
+/**
+ * Displays a form for adding a new pet for a specific customer.
+ * 
+ * @param customerId The ID of the customer who will own the new pet
+ * @param model Spring Model for passing data to the view
+ * @return The view name "pet_form" for adding a new pet
+ * 
+ * @implNote This method:
+ *           - Creates a new Pet object and associates it with the specified customer
+ *           - Retrieves the customer's details to pre-populate owner information
+ *           - Prepares the form with default values and necessary model attributes
+ *           - Sets an appropriate page title for the form
+ *           - Uses the "pet_form" template for both creating and editing pets
+ *           - Expects the customer to exist (throws NoSuchElementException if not found)
+ */
     @GetMapping("/customers/{id}/pets/new")
     public String addPet(
             @PathVariable("id") Integer customerId,
@@ -64,9 +93,25 @@ public class PetController {
         return "pet_form";
     }
 
-    // Save new pet or edit existing pet 
-    // and redirect to customer pets listS
-
+/**
+ * Handles the creation or update of a pet's information, including photo uploads.
+ * 
+ * @param pet The Pet object containing the pet's data from the form
+ * @param urlCustomerId The ID of the customer who owns the pet (from URL)
+ * @param photoFile Optional uploaded photo file for the pet
+ * @param redirectAttributes For passing success/error messages to the redirected view
+ * @return Redirect URL to the owner's pets list page
+ * 
+ * @throws RuntimeException If the customer is not found or there's a customer ID mismatch
+ * @implNote This method:
+ *           - Handles both new pet creation and updates to existing pets
+ *           - Manages file uploads for pet photos
+ *           - Validates customer ownership before saving
+ *           - Updates all pet fields including notes and medical information
+ *           - Handles photo file storage and cleanup
+ *           - Provides user feedback through flash messages
+ *           - Maintains data consistency between pet and owner
+ */
     @PostMapping("/customers/{id}/pets/save")
     public String savePet(
             @ModelAttribute("pet") Pet pet,
@@ -137,8 +182,25 @@ public class PetController {
         }
     }
 
-    // Returns edit pet form with pet data 
-    // when edit button is clicked at pet list
+/**
+ * Displays the pet editing form with the specified pet's data pre-populated.
+ * 
+ * @param urlCustomerId The ID of the customer who owns the pet (from URL)
+ * @param petId The ID of the pet to be edited
+ * @param model Spring Model for passing data to the view
+ * @param redirectAttributes For passing error messages if needed
+ * @return The view name "pet_form" for editing, or redirects to customer's pets list on error
+ * 
+ * @throws Exception If the pet cannot be found or accessed
+ * 
+ * @implNote This method:
+ *           - Retrieves the pet by ID for editing
+ *           - Verifies the pet belongs to the specified customer
+ *           - Prepares the pet data for the edit form
+ *           - Sets the appropriate page title indicating edit mode
+ *           - Uses the same form template as pet creation
+ *           - Handles errors by redirecting with an error message
+ */
     @GetMapping("/customers/{tId}/pets/{id}/edit")
     public String editPet(
         @PathVariable("tId") Integer urlCustomerId,     
@@ -159,11 +221,22 @@ public class PetController {
         }
     }
 
-    /**
-     * Serves the pet photo file.
-     * @param filename the name of the file to serve
-     * @return the file as a resource
-     */
+/**
+ * Serves a pet's photo file as a web resource with proper content type and headers.
+ * 
+ * @param filename The name of the file to be served from the storage
+ * @return ResponseEntity containing the file as a Resource with appropriate headers
+ * 
+ * @implNote This method:
+ *           - Retrieves the file from storage using the provided filename
+ *           - Determines the MIME type of the file based on its extension
+ *           - Returns the file with appropriate content type for inline display
+ *           - Handles cases where the file is not found (returns 404)
+ *           - Uses streaming to efficiently serve files of any size
+ *           - Sets the Content-Disposition header to display the file in the browser
+ *           - Falls back to "application/octet-stream" if MIME type cannot be determined
+ *           - Wraps the response in a ResponseEntity for full HTTP control
+ */
     @GetMapping("/pets/photo/{filename:.+}")
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
         try {

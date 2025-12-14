@@ -62,6 +62,21 @@ public class MedicalHistoryController {
     @Autowired
     private MedicalAttachmentService attachmentService;
 
+/**
+ * Retrieves and displays a paginated list of medical history records for a specific pet.
+ * 
+ * @param petId The ID of the pet to retrieve medical history for
+ * @param urlCustomerId The ID of the customer (from URL) for redirection purposes
+ * @param keyword Optional search keyword for filtering records (unused in current implementation)
+ * @param page Page number for pagination (default: 1)
+ * @param size Number of records per page (default: 6)
+ * @param sort Array containing sort field and direction (default: ["id","desc"])
+ * @param model Spring Model object for passing data to the view
+ * @param redirectAttributes For passing flash attributes in case of errors
+ * @return The view name "medical_history" for successful retrieval, or redirects to customer's pets list on error
+ * 
+ * @throws Exception If there's an error retrieving the pet or its medical history
+ */
     @GetMapping("/customers/{cId}/pets/{petId}/medicalhistory")
     public String getAuthorMedicalHistory(
             @PathVariable("petId") Integer petId,
@@ -117,7 +132,17 @@ public class MedicalHistoryController {
         }
     }
 
-    // New Author
+/**
+ * Displays a form for creating a new medical record for a specific pet.
+ * 
+ * @param petId The ID of the pet for which to create a new medical record
+ * @param model Spring Model object for passing data to the view
+ * @return The view name "medical_record_form" for displaying the medical record creation form
+ * 
+ * @implNote This method initializes a new MedicalHistory object and associates it with the specified pet
+ *           before displaying the form. It also adds customer and pet information to the model
+ *           for display in the form.
+ */
     @GetMapping("/pets/{petId}/medicalhistoryrecord/new")
     public String addMedicalRecord(
             @PathVariable("petId") Integer petId,
@@ -136,6 +161,22 @@ public class MedicalHistoryController {
         return "medical_record_form";
     }
 
+/**
+ * Displays a form for editing an existing medical record.
+ * 
+ * @param urlCustomerId The ID of the customer (from URL) for redirection in case of errors
+ * @param petId The ID of the pet associated with the medical record
+ * @param recordId The ID of the medical record to edit
+ * @param model Spring Model object for passing data to the view
+ * @param redirectAttributes For passing flash attributes in case of errors
+ * @return The view name "medical_record_form" for successful retrieval, or redirects to the pet's medical history on error
+ * 
+ * @throws Exception If there's an error retrieving the medical record or associated pet/customer data
+ * 
+ * @implNote This method retrieves an existing medical record and prepares it for editing in the same form
+ *           used for creating new records. It includes error handling to redirect back to the medical history
+ *           view if the record cannot be found or accessed.
+ */
     @GetMapping("/customers/{cId}/pets/{petId}/medicalhistoryrecord/{recordId}/edit")
     public String editMedicalRecord(
             @PathVariable("cId") Integer urlCustomerId,
@@ -161,6 +202,26 @@ public class MedicalHistoryController {
         }
     }
 
+ /**
+ * Handles the submission of a medical record form, saving both the record and any associated attachments.
+ * 
+ * @param mhr The MedicalHistory object bound from the form submission
+ * @param urlCustomerId The ID of the customer (from URL) for redirection
+ * @param petId The ID of the pet associated with the medical record
+ * @param model Spring Model object (unused in current implementation)
+ * @param files List of uploaded image files (optional)
+ * @param descriptions List of descriptions corresponding to the uploaded files (optional)
+ * @param redirectAttributes For passing flash attributes for success/error messages
+ * @return Redirect URL to the pet's medical history page after saving
+ * 
+ * @throws Exception If there's an error during file processing or database operations
+ * 
+ * @implNote This method handles both creating new records and updating existing ones.
+ *           It processes file uploads, associates them with the medical record,
+ *           and maintains referential integrity with the pet. The method includes
+ *           validation to ensure file-description pairs match and handles transaction
+ *           rollback on errors.
+ */   
     @PostMapping("/customers/{cId}/pets/{pId}/medicalhistoryrecord/save")
     @Transactional
     public String saveMedicalRecord(
@@ -241,6 +302,22 @@ public class MedicalHistoryController {
         }
     }
 
+/**
+ * Handles the deletion of a medical history record and its associated attachments.
+ * 
+ * @param recordId The ID of the medical history record to delete
+ * @param redirectAttributes For passing flash attributes for success/error messages
+ * @return Redirect URL to the pet's medical history page after deletion, or to customers list on error
+ * 
+ * @throws Exception If there's an error during the deletion process
+ * 
+ * @implNote This method:
+ *           - Retrieves the medical record to determine the associated pet and customer
+ *           - Deletes the record (cascading to associated attachments)
+ *           - Handles error cases with appropriate redirects and messages
+ *           - Maintains data integrity by ensuring proper cleanup of related resources
+ *           - Uses transactions to ensure atomicity of the delete operation
+ */
     @GetMapping("/medicalhistory/delete/{id}")
     @Transactional
     public String deleteMedicalHistory(
@@ -268,6 +345,21 @@ public class MedicalHistoryController {
         }
     }
 
+/**
+ * Handles the download of a medical history attachment file.
+ * 
+ * @param medicalHistoryId The ID of the medical history record the attachment belongs to
+ * @param attachmentId The ID of the attachment to download
+ * @return ResponseEntity containing the file as a Resource with appropriate headers
+ * @throws RuntimeException If the attachment is not found or doesn't belong to the specified medical record
+ * 
+ * @implNote This method:
+ *           - Verifies the existence and ownership of the attachment
+ *           - Streams the file content with proper content type and headers
+ *           - Supports resumable downloads with range requests
+ *           - Includes security checks to prevent unauthorized access
+ *           - Handles file not found and access control scenarios
+ */
     @GetMapping("/medicalhistory/{id}/attachments/{attachmentId}/download")
     public ResponseEntity<Resource> downloadAttachment(
             @PathVariable("id") Integer medicalHistoryId,
@@ -301,6 +393,22 @@ public class MedicalHistoryController {
         }
     }
 
+ /**
+ * Handles the deletion of a medical history attachment via AJAX request.
+ * 
+ * @param attachmentId The ID of the attachment to be deleted
+ * @return ResponseEntity containing a JSON response with operation status
+ * 
+ * @throws RuntimeException If the attachment is not found or deletion fails
+ * 
+ * @implNote This method:
+ *           - Verifies the existence of the attachment
+ *           - Deletes the physical file from storage
+ *           - Removes the attachment record from the database
+ *           - Returns a JSON response indicating success or failure
+ *           - Uses transactions to ensure data consistency
+ *           - Handles errors gracefully with appropriate HTTP status codes
+ */   
     @DeleteMapping("medicalhistory/attachments/{attachmentId}")
     @ResponseBody
     @Transactional
