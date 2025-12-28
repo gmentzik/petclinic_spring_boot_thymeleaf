@@ -15,6 +15,7 @@
 
 <body>
   <div th:replace="fragments/header :: header"></div>
+  <div th:if="${message}" class="alert alert-info" th:text="${message}"></div>
 
   <div class="container-fluid">
     <h2 class="text-center">[[${pageTitle}]]</h2>
@@ -23,7 +24,9 @@
     <h4 th:text="'Customer: ' + ${customer.firstName} + ' ' + ${customer.surName} + ' (' + ${customer.id} + ')'"></h4>
 
     <div class="my-3">
-      <form id="medicalHistoryForm" th:action="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/save'}" method="post" enctype="multipart/form-data" th:object="${medicalhistory}"
+      <form id="medicalHistoryForm"
+        th:action="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/save'}"
+        method="post" enctype="multipart/form-data" th:object="${medicalhistory}"
         style="max-width: 900px; margin: 0 auto">
         <input type="hidden" th:field="*{id}" />
 
@@ -45,36 +48,98 @@
           <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="report">Report</label>
             <div class="col-sm-9">
-              <textarea class="form-control" th:field="*{report}" required minlength="2" maxlength="4096" id="report" rows="10"></textarea>
+              <textarea class="form-control" th:field="*{report}" required minlength="2" maxlength="4096" id="report"
+                rows="10"></textarea>
             </div>
           </div>
 
-
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <!-- Show only when editing an existing medical history record -->
-              <a th:if="*{id} != null"
-                 id="btnDelete"
-                 class="btn btn-danger btn-sm"
-                 th:attr="data-history-id=*{id}">
-                 <i class="fa fa-trash-alt mr-1"></i> Delete
-              </a>
-              <noscript>
-                <div class="text-muted small mt-1">Deleting requires JavaScript. Please enable JavaScript to delete this record.</div>
-              </noscript>
+          <!-- Images Section -->
+          <!-- Edit existing Images -->
+          <div class="attachments mt-3" th:if="*{attachmentFiles != null and !attachmentFiles.isEmpty()}">
+            <h6>Existing Attachments:</h6>
+            <div class="d-flex flex-wrap">
+              <div th:each="attachment : *{attachmentFiles}" class="mr-3 mb-3 text-center" style="width: 140px;">
+                <!-- Image that opens modal -->
+                <a href="#" class="d-block mb-1" data-toggle="modal"
+                  th:data-target="'#imageModal' + ${medicalhistory.id} + '-' + ${attachment.id}">
+                  <img
+                    th:src="@{'/medicalhistory/' + ${medicalhistory.id} + '/attachments/' + ${attachment.id} + '/download'}"
+                    class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;"
+                    th:alt="${attachment.description} ?: 'Attachment'">
+                </a>
+                <!-- Description -->
+                <div class="small text-muted mb-1" style="height: 2.5em; overflow: hidden; text-overflow: ellipsis;"
+                  th:title="${attachment.description}" th:text="${attachment.description} ?: 'No description'">
+                </div>
+                <!-- Delete Button -->
+                <button type="button" class="btn btn-sm btn-outline-danger delete-attachment w-100"
+                  th:data-attachment-id="${attachment.id}">
+                  <i class="fa fa-trash"></i> Delete
+                </button>
+              </div>
             </div>
-            <div>
-              <button type="button" id="btnSave" class="btn btn-primary btn-sm mr-2">
-                <i class="fa fa-save mr-1"></i> Save
+            <!-- Image Preview Modals -->
+            <div th:each="attachment : *{attachmentFiles}">
+              <div class="modal fade" th:id="'imageModal' + ${medicalhistory.id} + '-' + ${attachment.id}" tabindex="-1"
+                role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" th:text="${attachment.description} ?: 'Attachment'"></h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body text-center">
+                      <img
+                        th:src="@{'/medicalhistory/' + ${medicalhistory.id} + '/attachments/' + ${attachment.id} + '/download'}"
+                        class="img-fluid" style="max-height: 70vh;" th:alt="${attachment.description} ?: 'Attachment'">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add New Images -->
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">New Attachments</label>
+            <small class="form-text text-muted">You can upload multiple images. Each can have an optional
+              description.</small>
+            <div class="col-sm-9">
+              <div id="attachmentRows"></div>
+              <button type="button" id="addAttachment" class="btn btn-outline-secondary btn-sm mt-2">
+                <i class="fa fa-plus mr-1"></i> Add Image
               </button>
-              <button type="button" id="btnCancel" class="btn btn-secondary btn-sm">
-                <i class="fa fa-times mr-1"></i> Cancel
-              </button>
+              <div class="text-muted small mt-2">Uploaded files will be resized. Accepted: images.</div>
             </div>
           </div>
         </div>
-      </form>
     </div>
+
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <!-- Show only when editing an existing medical history record -->
+        <a th:if="*{id} != null" id="btnDelete" class="btn btn-danger btn-sm" th:attr="data-history-id=*{id}">
+          <i class="fa fa-trash-alt mr-1"></i> Delete
+        </a>
+        <noscript>
+          <div class="text-muted small mt-1">Deleting requires JavaScript. Please enable JavaScript to delete this
+            record.</div>
+        </noscript>
+      </div>
+      <div>
+        <button type="button" id="btnSave" class="btn btn-primary btn-sm mr-2">
+          <i class="fa fa-save mr-1"></i> Save
+        </button>
+        <button type="button" id="btnCancel" class="btn btn-secondary btn-sm">
+          <i class="fa fa-times mr-1"></i> Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+  </form>
+  </div>
   </div>
 
   <!-- Save confirmation modal -->
@@ -122,33 +187,150 @@
   <div th:replace="fragments/footer :: footer"></div>
 
   <script type="text/javascript">
-      $(document).ready(function () {
-        // Cancel -> back to medical history list
-        $("#btnCancel").on("click", function () {
-          window.location = "[[@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}]]";
-        });
+    $(document).ready(function () {
 
-        // Save confirmation
-        $("#btnSave").on("click", function (e) {
-          e.preventDefault();
-          $("#saveConfirmModal").modal();
-        });
+      // Attachments dynamic rows
+      function addAttachmentRow() {
+        var row = $('<div class="form-row align-items-center mb-2 attachment-row">\
+            <div class="col-7">\
+              <input type="file" name="images" accept="image/*" class="form-control-file"/>\
+            </div>\
+            <div class="col-4">\
+              <input type="text" name="descriptions" class="form-control" placeholder="Description" maxlength="255"/>\
+            </div>\
+            <div class="col-1 text-right">\
+              <button type="button" class="btn btn-outline-danger btn-sm remove-attachment" title="Remove"><i class="fa fa-trash"></i></button>\
+            </div>\
+          </div>');
+        $("#attachmentRows").append(row);
+      }
 
-        $("#yesSaveBtn").on("click", function () {
-          $("#saveConfirmModal").modal('hide');
-          $("#medicalHistoryForm").trigger('submit');
-        });
-
-        // Delete confirmation
-        $("#btnDelete").on("click", function (e) {
-          e.preventDefault();
-          var historyId = $(this).data("historyId");
-          var deleteUrl = "[[@{/medicalhistory/delete/}]]" + historyId;
-          $("#yesBtn").attr("href", deleteUrl);
-          $("#confirmText").html("Do you want to delete this medical history record (ID: <strong>" + historyId + "</strong>)?");
-          $("#confirmModal").modal();
-        });
+      $("#addAttachment").on("click", function () {
+        addAttachmentRow();
       });
+
+      $("#attachmentRows").on("click", ".remove-attachment", function () {
+        $(this).closest('.attachment-row').remove();
+        if ($('.attachment-row').length === 0) {
+          addAttachmentRow();
+        }
+      });
+
+      // Ensure at least one row initially
+      if ($('.attachment-row').length === 0) {
+        addAttachmentRow();
+      }
+
+      // Cancel -> back to medical history list
+      $("#btnCancel").on("click", function () {
+        window.location = "[[@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistory'}]]";
+      });
+
+      // Save confirmation
+      $("#btnSave").on("click", function (e) {
+        e.preventDefault();
+        $("#saveConfirmModal").modal();
+      });
+
+      $("#yesSaveBtn").on("click", function () {
+        $("#saveConfirmModal").modal('hide');
+        $("#medicalHistoryForm").trigger('submit');
+      });
+
+      // Add this to your existing JavaScript
+      $("#medicalHistoryForm").on("submit", function (e) {
+        let isValid = true;
+
+        // Check each file input that has a file selected
+        $('input[type="file"]').each(function () {
+          if (this.files && this.files[0]) {
+            const $row = $(this).closest('.attachment-row');
+            const $description = $row.find('input[name="descriptions"]');
+
+            if (!$description.val().trim()) {
+              isValid = false;
+              $description.addClass('is-invalid');
+              $row.find('.invalid-feedback').remove();
+              $description.after('<div class="invalid-feedback">Please provide a description for the file</div>');
+            } else {
+              $description.removeClass('is-invalid');
+            }
+          }
+        });
+
+        if (!isValid) {
+          e.preventDefault();
+          return false;
+        }
+
+        return true;
+      });
+
+      // Delete confirmation
+      $("#btnDelete").on("click", function (e) {
+        e.preventDefault();
+        var historyId = $(this).data("historyId");
+        var deleteUrl = "[[@{/medicalhistory/delete/}]]" + historyId;
+        $("#yesBtn").attr("href", deleteUrl);
+        $("#confirmText").html("Do you want to delete this medical history record (ID: <strong>" + historyId + "</strong>)?");
+        $("#confirmModal").modal();
+      });
+    });
+
+
+    // Handle delete attachment button click
+    $(document).on('click', '.delete-attachment', function () {
+      const attachmentId = $(this).data('attachment-id');
+      const attachmentElement = $(this).closest('.mr-3.mb-3');
+
+      if (confirm('Are you sure you want to delete this attachment?')) {
+        $.ajax({
+          url: `/medicalhistory/attachments/${attachmentId}`,
+          method: 'DELETE',
+          success: function (response) {
+            if (response.success) {
+              // Remove the attachment element from the UI
+              attachmentElement.fadeOut(300, function () {
+                $(this).remove();
+              });
+              showAlert('Attachment deleted successfully', 'success');
+            } else {
+              showAlert('Failed to delete attachment: ' + (response.message || 'Unknown error'), 'danger');
+            }
+          },
+          error: function (xhr) {
+            let errorMsg = 'An error occurred while deleting the attachment';
+            try {
+              const errorResponse = JSON.parse(xhr.responseText);
+              errorMsg = errorResponse.message || errorMsg;
+            } catch (e) {
+              errorMsg = xhr.statusText || errorMsg;
+            }
+            showAlert(errorMsg, 'danger');
+          }
+        });
+      }
+    });
+
+    // Helper function to show alerts
+    function showAlert(message, type) {
+      const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    `;
+      $('.container-fluid').prepend(alertHtml);
+      // Auto-remove alert after 5 seconds
+      setTimeout(() => {
+        $('.alert').fadeOut(300, function () {
+          $(this).remove();
+        });
+      }, 5000);
+
+    }
   </script>
 
 </html>

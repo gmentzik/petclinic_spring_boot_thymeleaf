@@ -1,5 +1,6 @@
 package com.gmentzik.spring.thymeleaf.petclinic.service;
 
+import com.gmentzik.spring.thymeleaf.petclinic.common.enums.ImageType;
 import com.gmentzik.spring.thymeleaf.petclinic.config.FileStorageProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -21,8 +22,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
-
-import com.gmentzik.spring.thymeleaf.petclinic.utils.ImageType;
 
 @Service
 public class FileStorageService {

@@ -1,8 +1,12 @@
 package com.gmentzik.spring.thymeleaf.petclinic.entity;
 
-
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -15,7 +19,6 @@ public class MedicalHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-  
 
     @ManyToOne
     @JoinColumn(name = "pet_id", nullable = false)
@@ -25,22 +28,26 @@ public class MedicalHistory {
     @Column(name = "report", columnDefinition = "TEXT")
     private String report;
 
-    @Column(updatable=false)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	LocalDate created;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	LocalDate updated;
 
-	// OnCreate, OnUpdate
-	@PrePersist
-	public void onCreate() {  
-		 this.created = LocalDate.now(ZoneOffset.UTC);
-	}
-	
-	@PreUpdate
-	public void onUpdate() {   
-		 this.updated = LocalDate.now(ZoneOffset.UTC);
-	}
+    @OneToMany(mappedBy = "medicalHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MedicalAttachment> attachmentFiles = new HashSet<>();
+
+    @Column(updatable=false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate created;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate updated;
+
+    // OnCreate, OnUpdate
+    @PrePersist
+    public void onCreate() {  
+        this.created = LocalDate.now(ZoneOffset.UTC);
+    }
+    
+    @PreUpdate
+    public void onUpdate() {   
+        this.updated = LocalDate.now(ZoneOffset.UTC);
+    }
 
     public Integer getId() {
         return id;
@@ -50,8 +57,13 @@ public class MedicalHistory {
         this.id = id;
     }
 
-    public Pet gePet() {
+    public Pet getPet() {
         return pet;
+    }
+    
+    // For backward compatibility with existing code
+    public Pet gePet() {
+        return getPet();
     }
 
     public void setPet(Pet pet) {
@@ -82,11 +94,45 @@ public class MedicalHistory {
         this.updated = updated;
     }
 
+    // Attachment management methods
+    public Set<MedicalAttachment> getAttachmentFiles() {
+        return attachmentFiles;
+    }
+
+    public void setAttachmentFiles(Set<MedicalAttachment> attachmentFiles) {
+        this.attachmentFiles = attachmentFiles;
+    }
+    
+    public void addAttachment(MedicalAttachment attachment) {
+        attachmentFiles.add(attachment);
+        attachment.setMedicalHistory(this);
+    }
+    
+    public void removeAttachment(MedicalAttachment attachment) {
+        attachmentFiles.remove(attachment);
+        attachment.setMedicalHistory(null);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MedicalHistory that = (MedicalHistory) o;
+        return Objects.equals(id, that.id);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+    
     @Override
     public String toString() {
-        return "PetHistory [id=" + id + ", pet=" + pet + ", report=" + report + ", created=" + created + ", updated="
-                + updated + "]";
+        return "MedicalHistory{" +
+                "id=" + id +
+                ", pet=" + (pet != null ? pet.getId() : null) +
+                ", created=" + created +
+                ", updated=" + updated +
+                '}';
     }
-     
-
 }

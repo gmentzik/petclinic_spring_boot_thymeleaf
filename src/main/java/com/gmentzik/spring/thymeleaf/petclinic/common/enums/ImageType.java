@@ -1,4 +1,4 @@
-package com.gmentzik.spring.thymeleaf.petclinic.model;
+package com.gmentzik.spring.thymeleaf.petclinic.common.enums;
 
 /**
  * Enum to represent different types of images that can be stored
