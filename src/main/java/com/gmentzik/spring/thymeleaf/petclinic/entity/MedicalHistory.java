@@ -2,13 +2,11 @@ package com.gmentzik.spring.thymeleaf.petclinic.entity;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

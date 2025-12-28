@@ -3,7 +3,7 @@ package com.gmentzik.spring.thymeleaf.petclinic.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

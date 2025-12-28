@@ -1,6 +1,6 @@
 package com.gmentzik.spring.thymeleaf.petclinic.repository;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
