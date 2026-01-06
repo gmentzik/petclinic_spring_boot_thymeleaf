@@ -2,8 +2,8 @@ package com.gmentzik.spring.thymeleaf.petclinic.entity;
 
 import java.util.List;
 
-import javax.persistence.*;
-import javax.validation.constraints.Pattern;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 
