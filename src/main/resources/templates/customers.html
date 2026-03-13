@@ -78,6 +78,7 @@
                 <th th:replace="fragments/sorting :: sorting('surName','Sur Name')"></th>
                 <th th:replace="fragments/sorting :: sorting('email','Email')"></th>
                 <th th:replace="fragments/sorting :: sorting('phone','Phone')"></th>
+                <th th:replace="fragments/sorting :: sorting('mobile','Mobile')"></th>
                 <th class="center-cell-content">no of Pets</th>
               </tr>
             </thead>
@@ -99,6 +100,7 @@
                 <td>[[${customer.surName}]]</td>
                 <td>[[${customer.email}]]</td>
                 <td>[[${customer.phone}]]</td>
+                <td>[[${customer.mobile}]]</td>
                 <td class="center-cell-content">
                   <a th:href="@{'/customers/' + ${customer.id} + '/pets'}"
                      data-toggle="tooltip"
@@ -120,6 +122,7 @@
                   <th th:replace="fragments/sorting :: sorting('city','City')"></th>
                   <th th:replace="fragments/sorting :: sorting('state','State')"></th>
                   <th th:replace="fragments/sorting :: sorting('zipCode','Zip Code')"></th>
+                  <th th:replace="fragments/sorting :: sorting('country','Country')"></th>
                   <th th:replace="fragments/sorting :: sorting('entryDate','Entry Date')"></th>
                   <th class="note-col">Note 1</th>
                   <th class="note-col">Note 2</th>
@@ -133,6 +136,7 @@
                   <td>[[${customer.city}]]</td>
                   <td>[[${customer.state}]]</td>
                   <td>[[${customer.zipCode}]]</td>
+                  <td>[[${customer.country}]]</td>
                   <td>[[${customer.entryDate}]]</td>
                   <td class="note-col">
                     <a href="#" class="note-preview" th:attr="data-full=${customer.note1}" data-title="Note1"

@@ -28,8 +28,14 @@ public class Customer {
   @Column(length = 16)
   private String phone;
 
+  @Column(length = 16)
+  private String mobile;
+
   @Column(length = 256)
   private String address;
+
+  @Column(length = 128)
+  private String country;
 
   @Column(length = 128)
   private String city;
@@ -44,17 +50,19 @@ public class Customer {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private LocalDate entryDate;
 
-  public Customer(String firstName, String surName, String email, String phone, String address, 
-                 String city, String state, String zipCode, LocalDate entryDate, boolean active, 
+  public Customer(String firstName, String surName, String email, String phone, String mobile, String address, 
+                 String city, String state, String zipCode, String country, LocalDate entryDate, boolean active, 
                  String note1, String note2, String note3) {
     this.firstName = firstName;
     this.surName = surName;
     this.email = email;
     this.phone = phone;
+    this.mobile = mobile;
     this.address = address;
     this.city = city;
     this.state = state;
     this.zipCode = zipCode;
+    this.country = country;
     this.entryDate = entryDate != null ? entryDate : LocalDate.now();
     this.active = active;
     this.note1 = note1;
@@ -161,6 +169,14 @@ public class Customer {
     this.phone = phone;
   }
 
+  public String getMobile() {
+    return mobile;
+  }
+
+  public void setMobile(String mobile) {
+    this.mobile = mobile;
+  }
+
   public String getAddress() {
     return address;
   }
@@ -193,6 +209,14 @@ public class Customer {
     this.zipCode = zipCode;
   }
 
+  public String getCountry() {
+    return country;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
+  }
+
   public LocalDate getEntryDate() {
     return entryDate;
   }
@@ -205,7 +229,7 @@ public class Customer {
   @Override
   public String toString() {
     return "Customer [id=" + id + ", firstName=" + firstName + ", surName=" + surName
-        + ", active=" + active + "entryDate=" + entryDate + "email=" + email + "phone=" + phone + "address=" + address + "city=" + city + "state=" + state + "zipCode=" + zipCode + "]";
+        + ", active=" + active + "entryDate=" + entryDate + "email=" + email + "phone=" + phone + "mobile=" + mobile + "address=" + address + "city=" + city + "state=" + state + "zipCode=" + zipCode + "country=" + country + "]";
   }
 
 }

@@ -69,6 +69,14 @@
           </div>
 
           <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="mobile">Mobile</label>
+            <div class="col-sm-9">
+              <input type="tel" th:field="*{mobile}" maxlength="16" class="form-control"
+                id="mobile" />
+            </div>
+          </div>
+
+          <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="address">Address</label>
             <div class="col-sm-9">
               <input type="text" th:field="*{address}" maxlength="256" class="form-control"
@@ -97,6 +105,14 @@
             <div class="col-sm-9">
               <input type="text" th:field="*{zipCode}" maxlength="16" class="form-control"
                 id="zipCode" />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label" for="country">Country</label>
+            <div class="col-sm-9">
+              <input type="text" th:field="*{country}" maxlength="128" class="form-control"
+                id="country" />
             </div>
           </div>
 

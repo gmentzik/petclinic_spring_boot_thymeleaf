@@ -157,10 +157,12 @@ public class CustomerController {
         existingCustomer.setSurName(customer.getSurName());
         existingCustomer.setEmail(customer.getEmail());
         existingCustomer.setPhone(customer.getPhone());
+        existingCustomer.setMobile(customer.getMobile());
         existingCustomer.setAddress(customer.getAddress());
         existingCustomer.setCity(customer.getCity());
         existingCustomer.setState(customer.getState());
         existingCustomer.setZipCode(customer.getZipCode());
+        existingCustomer.setCountry(customer.getCountry());
         existingCustomer.setActive(customer.isActive());
         existingCustomer.setEntryDate(customer.getEntryDate());
         existingCustomer.setNote1(customer.getNote1());
