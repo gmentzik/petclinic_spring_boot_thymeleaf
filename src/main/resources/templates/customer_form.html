@@ -228,7 +228,7 @@
       
       // Navigation Cancel Button 
       $("#btnCancel").on("click", function () {
-        window.location = "[[@{/customers}]]";
+        window.location = "/customers";
       });
   
       // Delete confirmation
@@ -238,7 +238,7 @@
         var customerFirstName = link.data("customerFirstName") || "";
         var customerSurName = link.data("customerSurName") || "";
         var customerId = link.data("customerId");
-        var deleteUrl = "[[@{/customers/delete/}]]" + customerId;
+        var deleteUrl = "/customers/delete/" + customerId;
         $("#yesBtn").attr("href", deleteUrl);
         var fullName = (customerFirstName + " " + customerSurName).trim();
         $("#confirmText").html("Do you want to delete the customer <strong>" + fullName + "</strong>?");
@@ -255,9 +255,53 @@
         $("#saveConfirmModal").modal('hide');
         $("#customerForm").trigger('submit');
       });
-    });
 
-        $('#datepicker').datepicker({
+      // Force uppercase on certain fields
+      // First Name - Uppercase
+      $("#firstName").on('input', function() {
+        var cursorPos = this.selectionStart;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(cursorPos, cursorPos);
+      });
+
+      // Surname - Uppercase
+      $("#surName").on('input', function() {
+        var cursorPos = this.selectionStart;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(cursorPos, cursorPos);
+      });
+
+      // City - Uppercase
+      $("#city").on('input', function() {
+        var cursorPos = this.selectionStart;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(cursorPos, cursorPos);
+      });
+
+      // State - Uppercase
+      $("#state").on('input', function() {
+        var cursorPos = this.selectionStart;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(cursorPos, cursorPos);
+      });
+
+      // Country - Uppercase
+      $("#country").on('input', function() {
+        var cursorPos = this.selectionStart;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(cursorPos, cursorPos);
+      });
+
+      // Apply uppercase on form submit for any missed changes
+      $("#customerForm").on('submit', function() {
+        $("#firstName").val($("#firstName").val().toUpperCase());
+        $("#surName").val($("#surName").val().toUpperCase());
+        $("#city").val($("#city").val().toUpperCase());
+        $("#state").val($("#state").val().toUpperCase());
+        $("#country").val($("#country").val().toUpperCase());
+      });
+
+      $('#datepicker').datepicker({
           format: 'yyyy-mm-dd',
           autoclose: true,
           todayHighlight: true,
@@ -270,6 +314,7 @@
             rightArrow: '<i class="fa fa-chevron-right"></i>'
           }
         });
+    });
   </script>
 
 </body>
