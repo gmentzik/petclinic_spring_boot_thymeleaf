@@ -170,8 +170,11 @@
             <ul class="list-unstyled mb-0">
               <li><strong>Gender:</strong> <span th:text="${pet.gender} ?: '-' "></span></li>
               <li><strong>Neutered:</strong> <span th:text="${pet.neutered} ?: '-' "></span></li>
-              <li><strong>Entry/Birth:</strong>
+              <li><strong>Entry / Birth date:</strong>
                 <span th:text="(${pet.entryDate} ?: '-') + ' / ' + (${pet.birthDate} ?: '-')"></span>
+              </li>
+              <li><strong>Age:</strong>
+                <span th:text="${pet.age} ?: '-'"></span> years
               </li>
             </ul>
           </div>

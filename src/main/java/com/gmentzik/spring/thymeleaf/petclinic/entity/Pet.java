@@ -1,6 +1,7 @@
 package com.gmentzik.spring.thymeleaf.petclinic.entity;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -59,6 +60,12 @@ public class Pet {
 
   @Column(name = "photo_filename", length = 255)
   private String photoFilename;
+
+@Transient
+public Integer getAge() {
+    if (birthDate == null) return null;
+    return Period.between(birthDate, LocalDate.now()).getYears();
+}
 
   public Pet() {
     this.entryDate = LocalDate.now();
