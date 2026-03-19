@@ -5,10 +5,12 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
 import com.gmentzik.spring.thymeleaf.petclinic.entity.MedicalHistory;
+import java.util.List;
 
 
 @Repository
@@ -17,6 +19,7 @@ public interface MedicalHistoryRepository extends JpaRepository<MedicalHistory, 
 
   // You can define custom query methods here if needed
   Page<MedicalHistory> findByPet(Pet pet, Pageable pageable);
-
+  
+  List<MedicalHistory> findByPetOrderByCreatedDesc(Pet pet);
 
 }

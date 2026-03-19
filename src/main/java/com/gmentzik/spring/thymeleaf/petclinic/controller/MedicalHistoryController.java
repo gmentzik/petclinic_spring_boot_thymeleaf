@@ -63,6 +63,45 @@ public class MedicalHistoryController {
     private MedicalAttachmentService attachmentService;
 
 /**
+ * Retrieves all medical history records for a specific pet for printing purposes.
+ * 
+ * @param petId The ID of the pet to retrieve all medical history for
+ * @param urlCustomerId The ID of the customer (from URL) for redirection purposes
+ * @param model Spring Model object for passing data to the view
+ * @param redirectAttributes For passing flash attributes in case of errors
+ * @return The view name "medical_history_print" for successful retrieval, or redirects to customer's pets list on error
+ * 
+ * @throws Exception If there's an error retrieving the pet or its medical history
+ */
+    @GetMapping("/customers/{cId}/pets/{petId}/medicalhistory/print")
+    public String getMedicalHistoryForPrint(
+            @PathVariable("petId") Integer petId,
+            @PathVariable("cId") Integer urlCustomerId,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            // Retrieve the pet based on the petId
+            Pet pet = petsService.getPetById(petId);
+            Customer customer = pet.getCustomer();
+            
+            // Get all medical history records for this pet
+            List<MedicalHistory> allMedicalHistory = medicalHistoryRepository.findByPetOrderByCreatedDesc(pet);
+            
+            // Add data to model
+            model.addAttribute("customer", customer);
+            model.addAttribute("pet", pet);
+            model.addAttribute("allMedicalHistory", allMedicalHistory);
+            model.addAttribute("pageTitle", "Medical History - Print View");
+            
+            return "medical_history_print";
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            return "redirect:/customers/" + urlCustomerId + "/pets";
+        }
+    }
+
+/**
  * Retrieves and displays a paginated list of medical history records for a specific pet.
  * 
  * @param petId The ID of the pet to retrieve medical history for
