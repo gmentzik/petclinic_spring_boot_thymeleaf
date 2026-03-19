@@ -12,6 +12,74 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
   <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+  <!-- Print-specific CSS -->
+  <style>
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      .text-primary.ml-2 {
+        display: none !important;
+      }
+      header {
+        display: none !important;
+      }
+      .card {
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .card-body {
+        padding: 0 !important;
+      }
+      .history-item {
+        border: 1px solid #ddd !important;
+        page-break-inside: avoid;
+        margin-bottom: 20px !important;
+      }
+      .container-fluid {
+        max-width: 100%;
+        padding: 0 15px;
+      }
+      h2 {
+        font-size: 20pt !important;
+        margin-bottom: 20px !important;
+      }
+      h5 {
+        font-size: 14pt !important;
+        margin-top: 15px !important;
+        margin-bottom: 10px !important;
+      }
+      h6 {
+        font-size: 12pt !important;
+        margin-top: 10px !important;
+        margin-bottom: 5px !important;
+      }
+      p, li {
+        font-size: 11pt !important;
+        line-height: 1.3 !important;
+        margin-bottom: 5px !important;
+      }
+      .report {
+        font-size: 10pt !important;
+        line-height: 1.3 !important;
+        margin: 10px 0 !important;
+      }
+      .img-thumbnail {
+        max-width: 150px !important;
+        max-height: 150px !important;
+      }
+      .attachments img {
+        max-width: 120px !important;
+        max-height: 120px !important;
+        page-break-inside: avoid;
+      }
+      @page {
+        size: A4;
+        margin: 1.5cm;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -21,7 +89,7 @@
     <h2 class="text-center">Medical History</h2>
 
     <!-- Notification message -->
-    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
+    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message no-print"
       role="alert">
       [[${message}]]
       <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
@@ -48,6 +116,9 @@
             </div>
           </div>
           <div class="d-flex align-items-center">
+            <button onclick="window.print()" class="btn btn-primary btn-sm mr-2 no-print" title="Print">
+              <i class="fas fa-print mr-1"></i> Print
+            </button>
             <!-- Pet Photo -->
             <div class="mr-3" th:if="${pet.photoFilename != null and pet.photoFilename != ''}">
               <img th:src="@{'/pets/photo/' + ${pet.photoFilename}}" class="img-thumbnail"
@@ -59,21 +130,21 @@
                 <i class="fas fa-paw fa-2x text-muted"></i>
               </div>
             </div>
-            <span class="badge align-self-start"
+            <span class="badge align-self-start no-print"
               th:classappend="${customer.active} ? ' badge-success' : ' badge-secondary'"
               th:text="${customer.active} ? 'Active' : 'Inactive'">
             </span>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-6 col-sm-6">
             <ul class="list-unstyled mb-3">
               <li><strong>Email:</strong> <span th:text="${customer.email} ?: '-' "></span></li>
               <li><strong>Phone:</strong> <span th:text="${customer.phone} ?: '-' "></span></li>
               <li><strong>Entry Date:</strong> <span th:text="${customer.entryDate}"></span></li>
             </ul>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-6 col-sm-6">
             <ul class="list-unstyled mb-3">
               <li><strong>Address:</strong> <span th:text="${customer.address} ?: '-' "></span></li>
               <li><strong>City/State/ZIP:</strong>
@@ -87,7 +158,7 @@
           <div class="col-md-12">
             <h6 class="mt-2">Pet Details</h6>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-6 col-sm-6">
             <ul class="list-unstyled mb-0">
               <li><strong>Pet:</strong> <span th:text="${pet.name}"></span> <small class="text-primary ml-2"
                   th:text="'(id: ' + ${pet.id} + ')' "></small></li>
@@ -95,7 +166,7 @@
               <li><strong>Breed:</strong> <span th:text="${pet.breed} ?: '-' "></span></li>
             </ul>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-6 col-sm-6">
             <ul class="list-unstyled mb-0">
               <li><strong>Gender:</strong> <span th:text="${pet.gender} ?: '-' "></span></li>
               <li><strong>Neutered:</strong> <span th:text="${pet.neutered} ?: '-' "></span></li>
@@ -108,7 +179,7 @@
       </div>
     </div>
 
-    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
+    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message no-print"
       role="alert">
       [[${message}]]
       <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
@@ -117,13 +188,13 @@
     </div>
     <!-- Add any specific content or placeholders for medical history data -->
 
-    <div class="my-3">
+    <div class="my-3 no-print">
       <form th:action="@{'/medicalhistory/search'}" id="searchForm">
         <!-- Include search form fields for Medical History -->
       </form>
     </div>
 
-    <div class="my-3">
+    <div class="my-3 no-print">
       <button id="btnAddMedicalHistory" class="btn btn-primary">Add Medical History Entry</button>
     </div>
 
@@ -137,7 +208,7 @@
               <div><strong>Updated:</strong> [[${history.updated}]]</div>
               <div class="mt-2">
                 <a th:href="@{'/customers/' + ${customer.id} + '/pets/' + ${pet.id} + '/medicalhistoryrecord/'+ ${history.id} + '/edit'}"
-                  title="Edit this entry" class="fa-regular fa-pen-to-square icon-dark" aria-label="Edit"></a>
+                  title="Edit this entry" class="fa-regular fa-pen-to-square icon-dark no-print" aria-label="Edit"></a>
               </div>
             </div>
             <!-- Right: 80% -->
@@ -165,7 +236,7 @@
                     </div>
                     <!-- Download Button -->
                     <a th:href="@{'/medicalhistory/' + ${history.id} + '/attachments/' + ${attachment.id} + '/download'}"
-                      class="btn btn-sm btn-outline-primary w-100" download>
+                      class="btn btn-sm btn-outline-primary w-100 no-print" download>
                       <i class="fas fa-download"></i> Download
                     </a>
 
@@ -216,7 +287,7 @@
       <span>No Medical History found!</span>
     </div>
 
-    <nav aria-label="Pagination" th:if="${totalPages > 0}">
+    <nav aria-label="Pagination" th:if="${totalPages > 0}" class="no-print">
       <ul class="pagination justify-content-center">
         <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
           <a th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},1, '<<', 'First Page')"></a>
@@ -247,13 +318,13 @@
       </ul>
     </nav>
 
-    <div>
+    <div class="no-print">
       <a th:href="@{'/customers/' + ${customer.id} + '/pets'}">Back to Customer Pets</a>
     </div>
 
   </div>
 
-  <div class="modal fade text-center" id="confirmModal">
+  <div class="modal fade text-center no-print" id="confirmModal">
     <!-- Modal content for confirmation dialogs -->
   </div>
 
