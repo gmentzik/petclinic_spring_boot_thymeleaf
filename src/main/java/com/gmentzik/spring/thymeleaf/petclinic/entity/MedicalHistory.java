@@ -39,7 +39,9 @@ public class MedicalHistory {
     // OnCreate, OnUpdate
     @PrePersist
     public void onCreate() {  
-        this.created = LocalDate.now(ZoneOffset.UTC);
+        LocalDate now = LocalDate.now(ZoneOffset.UTC);
+        this.created = now;
+        this.updated = now;
     }
     
     @PreUpdate
