@@ -216,7 +216,16 @@
     window.onload = function() {
       setTimeout(function() {
         window.print();
+        // Close the tab after print dialog closes (whether printed or cancelled)
+        setTimeout(function() {
+          window.close();
+        }, 100);
       }, 500);
+    };
+    
+    // Also close after print completes (for browsers that support onafterprint)
+    window.onafterprint = function() {
+      window.close();
     };
   </script>
 </body>
