@@ -237,7 +237,7 @@
         
         // Navigation Cancel Button 
         $("#btnCancel").on("click", () => {
-          window.location = `[[@{'/customers/' + ${customer.id} + '/pets'}]]`;
+          window.location = `/customers/[[${customer.id}]]/pets`;
         });
 
         // Save Confirmation
@@ -256,7 +256,7 @@
           e.preventDefault();
           const petName = $(e.currentTarget).data("petName") || "";
           const petId = $(e.currentTarget).data("petId");
-          $("#yesBtn").attr("href", `[[@{/pets/delete/}]]${petId}`);
+          $("#yesBtn").attr("href", `/pets/delete/${petId}`);
           $("#confirmText").html(`Do you want to delete the pet <strong>${petName}</strong>?`);
           $("#confirmModal").modal();
         });
