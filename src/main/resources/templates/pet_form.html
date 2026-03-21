@@ -16,7 +16,7 @@
 </head>
 
 <body>
-  <div th:replace="fragments/header :: header"></div>
+  <div th:replace="~{fragments/header :: header}"></div>
 
   <div class="container-fluid">
     <h2 class="text-center">[[${pageTitle}]]</h2>
@@ -32,7 +32,8 @@
           <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="name">Name</label>
             <div class="col-sm-9">
-              <input type="text" th:field="*{name}" required minlength="2" maxlength="128" class="form-control" id="title" />
+              <input type="text" th:field="*{name}" required minlength="2" maxlength="128" class="form-control" id="name" />
+
             </div>
           </div>
         
@@ -229,7 +230,7 @@
     </div>
   </div>
 
-  <div th:replace="fragments/footer :: footer"></div>
+  <div th:replace="~{fragments/footer :: footer}"></div>
 
   <script type="text/javascript" th:inline="javascript">
     $(function() {

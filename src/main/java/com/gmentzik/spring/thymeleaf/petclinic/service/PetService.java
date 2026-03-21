@@ -2,6 +2,7 @@ package com.gmentzik.spring.thymeleaf.petclinic.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.gmentzik.spring.thymeleaf.petclinic.entity.Pet;
 import com.gmentzik.spring.thymeleaf.petclinic.repository.PetRepository;
 
@@ -21,6 +22,7 @@ public class PetService {
     return petRepository.findById(id).orElse(null);
   }
 
+  @Transactional
   public Pet savePet(Pet pet) {
     return petRepository.save(pet);
   }

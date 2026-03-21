@@ -83,7 +83,7 @@
 </head>
 
 <body>
-  <div th:replace="fragments/header :: header"></div>
+  <div th:replace="~{fragments/header :: header}"></div>
 
   <div class="container-fluid">
     <h2 class="text-center">Medical History</h2>
@@ -293,11 +293,11 @@
     <nav aria-label="Pagination" th:if="${totalPages > 0}" class="no-print">
       <ul class="pagination justify-content-center">
         <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-          <a th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},1, '<<', 'First Page')"></a>
+          <a th:replace="~{fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},1, '<<', 'First Page')}"></a>
         </li>
         <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
           <a
-            th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${currentPage - 1}, 'Prev', 'Previous Page')"></a>
+            th:replace="~{fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${currentPage - 1}, 'Prev', 'Previous Page')}"></a>
         </li>
         <li class="page-item disabled" th:if="${currentPage - 2 > 1}">
           <a class="page-link" href="#">...</a>
@@ -305,18 +305,18 @@
         <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
           th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
           <a
-            th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${page}, ${page}, 'Page ' + ${page})"></a>
+            th:replace="~{fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${page}, ${page}, 'Page ' + ${page})}"></a>
         </li>
         <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
           <a class="page-link" href="#">...</a>
         </li>
         <li class="page-item font-weight-bold" th:classappend="${currentPage == totalPages} ? 'disabled'">
           <a
-            th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${currentPage + 1},'Next', 'Next Page')"></a>
+            th:replace="~{fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${currentPage + 1},'Next', 'Next Page')}"></a>
         </li>
         <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
           <a
-            th:replace="fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${totalPages}, '>>', 'Last Page')"></a>
+            th:replace="~{fragments/paging :: pagingMedicalHistory(${customer.id},${pet.id},${totalPages}, '>>', 'Last Page')}"></a>
         </li>
       </ul>
     </nav>
@@ -331,7 +331,7 @@
     <!-- Modal content for confirmation dialogs -->
   </div>
 
-  <div th:replace="fragments/footer :: footer"></div>
+  <div th:replace="~{fragments/footer :: footer}"></div>
 
   <script type="text/javascript">
     $(document).ready(function () {

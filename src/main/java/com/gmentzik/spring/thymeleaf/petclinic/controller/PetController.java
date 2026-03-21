@@ -2,6 +2,7 @@ package com.gmentzik.spring.thymeleaf.petclinic.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -113,6 +114,7 @@ public class PetController {
  *           - Maintains data consistency between pet and owner
  */
     @PostMapping("/customers/{id}/pets/save")
+    @Transactional
     public String savePet(
             @ModelAttribute("pet") Pet pet,
             @PathVariable("id") Integer urlCustomerId,
@@ -143,7 +145,9 @@ public class PetController {
                 }
             } else {
                 System.out.println("EDIT PET");
+                System.out.println("Received pet data: " + pet);
                 Pet dbPet = petService.getPetById(pet.getId());
+                System.out.println("Database pet before update: " + dbPet);
                 // Copy editable fields from form-bound pet to the persistent entity
                 dbPet.setName(pet.getName());
                 dbPet.setGender(pet.getGender());
@@ -155,23 +159,29 @@ public class PetController {
                 dbPet.setNote1(pet.getNote1());
                 dbPet.setNote2(pet.getNote2());
                 dbPet.setNote3(pet.getNote3());
-                Integer objTutorialId = dbPet.getCustomer().getId();
-                if (urlCustomerId != objTutorialId) {
+                System.out.println("Database pet after update: " + dbPet);
+                Integer objCustomerId = dbPet.getCustomer().getId();
+                if (urlCustomerId != objCustomerId) {
                     throw new Exception("customer ID mismatch!!!");
                 }
 
                 // Handle file upload if present for existing pet
+                System.out.println("Photo file: " + (photoFile != null ? photoFile.getOriginalFilename() : "null"));
                 if (photoFile != null && !photoFile.isEmpty()) {
+                    System.out.println("Processing photo upload...");
                     // Delete old photo if it exists
                     if (dbPet.getPhotoFilename() != null && !dbPet.getPhotoFilename().isEmpty()) {
+                        System.out.println("Deleting old photo: " + dbPet.getPhotoFilename());
                         fileStorageService.deleteFile(dbPet.getPhotoFilename());
                     }
                     // Store new photo
                     String fileName = fileStorageService.storeFile(photoFile, dbPet.getId(), ImageType.PET_ID);
+                    System.out.println("Stored new photo: " + fileName);
                     dbPet.setPhotoFilename(fileName);
                 }
                 
-                petService.savePet(dbPet);
+                Pet savedPet = petService.savePet(dbPet);
+                System.out.println("Pet after save: " + savedPet);
             }
             
             redirectAttributes.addFlashAttribute("message", "Pet saved successfully!");

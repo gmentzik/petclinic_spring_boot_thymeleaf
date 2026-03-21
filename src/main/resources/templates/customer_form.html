@@ -16,7 +16,7 @@
 </head>
 
 <body>
-  <div th:replace="fragments/header :: header"></div>
+  <div th:replace="~{fragments/header :: header}"></div>
 
   <div class="container-fluid">
     <h2 class="text-center">[[${pageTitle}]]</h2>
@@ -220,7 +220,7 @@
     </div>
   </div>
 
-  <div th:replace="fragments/footer :: footer"></div>
+  <div th:replace="~{fragments/footer :: footer}"></div>
 
   <script type="text/javascript" th:inline="javascript">
     $(function() {

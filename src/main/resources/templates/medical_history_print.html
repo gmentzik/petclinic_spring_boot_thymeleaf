@@ -83,7 +83,7 @@
 </head>
 
 <body>
-  <div th:replace="fragments/header :: header"></div>
+  <div th:replace="~{fragments/header :: header}"></div>
 
   <div class="container-fluid">
     <h2 class="text-center">Medical History</h2>
@@ -209,7 +209,7 @@
 
   </div>
 
-  <div th:replace="fragments/footer :: footer"></div>
+  <div th:replace="~{fragments/footer :: footer}"></div>
 
   <script>
     // Auto-print when page loads

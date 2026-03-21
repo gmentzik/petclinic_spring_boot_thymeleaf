@@ -16,7 +16,7 @@
 </head>
 
 <body>
-  <div th:replace="fragments/header :: header"></div>
+  <div th:replace="~{fragments/header :: header}"></div>
 
   <div class="container-fluid">
     <h2 class="text-center">Customer's Pets</h2>
@@ -98,14 +98,14 @@
         <thead class="thead-light">
           <tr>
             <th class="actions-cell">Actions</th>
-            <th th:replace="fragments/sorting :: sortingPets('id','Id')"></th>
-            <th th:replace="fragments/sorting :: sortingPets('name','Name')"></th>
-            <th th:replace="fragments/sorting :: sortingPets('gender','Gender')"></th>
-            <th th:replace="fragments/sorting :: sortingPets('animalType','Type')"></th>
+            <th th:replace="~{fragments/sorting :: sortingPets('id','Id')}"></th>
+            <th th:replace="~{fragments/sorting :: sortingPets('name','Name')}"></th>
+            <th th:replace="~{fragments/sorting :: sortingPets('gender','Gender')}"></th>
+            <th th:replace="~{fragments/sorting :: sortingPets('animalType','Type')}"></th>
             <th>Breed</th>
             <th>Neutered</th>
-            <th th:replace="fragments/sorting :: sortingPets('entryDate','Entry Date')"></th>
-            <th th:replace="fragments/sorting :: sortingPets('birthDate','Birth Date')"></th>
+            <th th:replace="~{fragments/sorting :: sortingPets('entryDate','Entry Date')}"></th>
+            <th th:replace="~{fragments/sorting :: sortingPets('birthDate','Birth Date')}"></th>
             <th class="note-col">Note 1</th>
             <th class="note-col">Note 2</th>
             <th class="note-col">Note 3</th>
@@ -155,27 +155,27 @@
     <nav aria-label="Pagination" th:if="${totalPages > 0}">
       <ul class="pagination justify-content-center">
         <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-          <a th:replace="fragments/paging :: pagingPets(${customer.id},1, '<<', 'First Page')"></a>
+          <a th:replace="~{fragments/paging :: pagingPets(${customer.id},1, '<<', 'First Page')}"></a>
         </li>
         <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
           <a
-            th:replace="fragments/paging :: pagingPets(${customer.id},${currentPage - 1}, 'Prev', 'Previous Page')"></a>
+            th:replace="~{fragments/paging :: pagingPets(${customer.id},${currentPage - 1}, 'Prev', 'Previous Page')}"></a>
         </li>
         <li class="page-item disabled" th:if="${currentPage - 2 > 1}">
           <a class="page-link" href="#">...</a>
         </li>
         <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
           th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
-          <a th:replace="fragments/paging :: pagingPets(${customer.id},${page}, ${page}, 'Page ' + ${page})"></a>
+          <a th:replace="~{fragments/paging :: pagingPets(${customer.id},${page}, ${page}, 'Page ' + ${page})}"></a>
         </li>
         <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
           <a class="page-link" href="#">...</a>
         </li>
         <li class="page-item font-weight-bold" th:classappend="${currentPage == totalPages} ? 'disabled'">
-          <a th:replace="fragments/paging :: pagingPets(${customer.id},${currentPage + 1},'Next', 'Next Page')"></a>
+          <a th:replace="~{fragments/paging :: pagingPets(${customer.id},${currentPage + 1},'Next', 'Next Page')}"></a>
         </li>
         <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-          <a th:replace="fragments/paging :: pagingPets(${customer.id},${totalPages}, '>>', 'Last Page')"></a>
+          <a th:replace="~{fragments/paging :: pagingPets(${customer.id},${totalPages}, '>>', 'Last Page')}"></a>
         </li>
       </ul>
     </nav>
@@ -203,7 +203,7 @@
     </div>
   </div>
 
-  <div th:replace="fragments/footer :: footer"></div>
+  <div th:replace="~{fragments/footer :: footer}"></div>
 
   <script type="text/javascript">
     $(document).ready(function () {
