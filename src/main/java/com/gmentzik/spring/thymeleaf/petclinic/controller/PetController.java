@@ -90,6 +90,9 @@ public class PetController {
         model.addAttribute("customer", customer);
         model.addAttribute("pet", pet);
         model.addAttribute("pageTitle", "Create new Pet");
+        model.addAttribute("animalTypes", Pet.AnimalType.values());
+        model.addAttribute("genders", Pet.Gender.values());
+        model.addAttribute("neuteredOptions", Pet.Neutered.values());
 
         return "pet_form";
     }
@@ -224,6 +227,9 @@ public class PetController {
             model.addAttribute("customer", pet.getCustomer());
             model.addAttribute("pet", pet);
             model.addAttribute("pageTitle", "Edit Pet ID: " + petId + ",(Customer IDs: "+ customerId +" )");
+            model.addAttribute("animalTypes", Pet.AnimalType.values());
+            model.addAttribute("genders", Pet.Gender.values());
+            model.addAttribute("neuteredOptions", Pet.Neutered.values());
             return "pet_form";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());

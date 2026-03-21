@@ -41,8 +41,9 @@
             <label class="col-sm-3 col-form-label" for="gender">Gender</label>
             <div class="col-sm-9">
             <select th:field="*{gender}" class="form-control" id="gender">
-              <option value="MALE">Male</option>
-              <option value="FEMALE">Female</option>
+              <option th:each="gender : ${genders}" 
+                      th:value="${gender}" 
+                      th:text="${gender}"></option>
             </select>
           </div>
           </div>
@@ -51,12 +52,9 @@
             <label class="col-sm-3 col-form-label" for="animalType">Type</label>
             <div class="col-sm-9">
               <select th:field="*{animalType}" class="form-control" id="animalType">
-                <option value="DOG">Dog</option>
-                <option value="CAT">Cat</option>
-                <option value="BIRD">Bird</option>
-                <option value="FISH">Fish</option>
-                <option value="REPTILE">Reptile</option>
-                <option value="OTHER">Other</option>
+                <option th:each="type : ${animalTypes}" 
+                        th:value="${type}" 
+                        th:text="${type}"></option>
               </select>
             </div>
           </div>
@@ -72,9 +70,9 @@
             <label class="col-sm-3 col-form-label" for="neutered">Neutered</label>
             <div class="col-sm-9">
               <select th:field="*{neutered}" class="form-control" id="neutered">
-                <option value="YES">Yes</option>
-                <option value="NO">No</option>
-                <option value="UNKNOWN">Unknown</option>
+                <option th:each="option : ${neuteredOptions}" 
+                        th:value="${option}" 
+                        th:text="${option}"></option>
               </select>
             </div>
           </div>
