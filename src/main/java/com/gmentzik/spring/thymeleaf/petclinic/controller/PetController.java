@@ -123,10 +123,9 @@ public class PetController {
         try {
 
             System.out.println("SAVE PET");
-            System.out.println(pet);
-            // Tutorial authorTutorial = author.getTutorial();
-            // If new Author/Pet does not contain Tutorial obj
-            // if (authorTutorial == null) {
+            // System.out.println(pet);
+            // Check if pet has id. If not is a new entry to create 
+            // else is existing pet for to update
             if (pet.getId() == null) {
                 // New pet
                 System.out.println("NEW PET");
@@ -137,7 +136,8 @@ public class PetController {
                 // Save pet first to get an ID
                 pet = petService.savePet(pet);
                 
-                // Handle file upload if present
+                // Handle file upload if present for existing pet
+                System.out.println("Photo file: " + (photoFile != null ? photoFile.getOriginalFilename() : "null"));
                 if (photoFile != null && !photoFile.isEmpty()) {
                     String fileName = fileStorageService.storeFile(photoFile, pet.getId(), ImageType.PET_ID);
                     pet.setPhotoFilename(fileName);
@@ -145,7 +145,7 @@ public class PetController {
                 }
             } else {
                 System.out.println("EDIT PET");
-                System.out.println("Received pet data: " + pet);
+                // System.out.println("Received pet data: " + pet);
                 Pet dbPet = petService.getPetById(pet.getId());
                 System.out.println("Database pet before update: " + dbPet);
                 // Copy editable fields from form-bound pet to the persistent entity
@@ -164,7 +164,7 @@ public class PetController {
                 if (urlCustomerId != objCustomerId) {
                     throw new Exception("customer ID mismatch!!!");
                 }
-
+                Pet updatedPet = petService.savePet(dbPet);
                 // Handle file upload if present for existing pet
                 System.out.println("Photo file: " + (photoFile != null ? photoFile.getOriginalFilename() : "null"));
                 if (photoFile != null && !photoFile.isEmpty()) {
@@ -175,13 +175,13 @@ public class PetController {
                         fileStorageService.deleteFile(dbPet.getPhotoFilename());
                     }
                     // Store new photo
-                    String fileName = fileStorageService.storeFile(photoFile, dbPet.getId(), ImageType.PET_ID);
+                    String fileName = fileStorageService.storeFile(photoFile, updatedPet.getId(), ImageType.PET_ID);
                     System.out.println("Stored new photo: " + fileName);
-                    dbPet.setPhotoFilename(fileName);
+                    updatedPet.setPhotoFilename(fileName);
                 }
                 
-                Pet savedPet = petService.savePet(dbPet);
-                System.out.println("Pet after save: " + savedPet);
+                Pet savedPet = petService.savePet(updatedPet);
+                // System.out.println("Pet after save: " + savedPet);
             }
             
             redirectAttributes.addFlashAttribute("message", "Pet saved successfully!");
