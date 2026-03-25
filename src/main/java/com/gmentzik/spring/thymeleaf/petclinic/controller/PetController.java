@@ -19,6 +19,7 @@ import com.gmentzik.spring.thymeleaf.petclinic.entity.Customer;
 import com.gmentzik.spring.thymeleaf.petclinic.repository.CustomerRepository;
 import com.gmentzik.spring.thymeleaf.petclinic.service.PetService;
 import com.gmentzik.spring.thymeleaf.petclinic.service.FileStorageService;
+import com.gmentzik.spring.thymeleaf.petclinic.service.AnimalTypeService;
 
 @Controller
 public class PetController {
@@ -31,6 +32,9 @@ public class PetController {
 
     @Autowired
     private FileStorageService fileStorageService;
+    
+    @Autowired
+    private AnimalTypeService animalTypeService;
 
 /**
  * Handles the deletion of a pet by its ID and redirects to the owner's pet list.
@@ -90,7 +94,7 @@ public class PetController {
         model.addAttribute("customer", customer);
         model.addAttribute("pet", pet);
         model.addAttribute("pageTitle", "Create new Pet");
-        model.addAttribute("animalTypes", Pet.AnimalType.values());
+        model.addAttribute("animalTypes", animalTypeService.getAllAnimalTypes());
         model.addAttribute("genders", Pet.Gender.values());
         model.addAttribute("neuteredOptions", Pet.Neutered.values());
 
@@ -136,6 +140,14 @@ public class PetController {
                     .orElseThrow(() -> new RuntimeException("Customer not found"));
                 pet.setCustomer(customer);
                 
+                // Convert name and breed to uppercase
+                if (pet.getName() != null) {
+                    pet.setName(pet.getName().toUpperCase());
+                }
+                if (pet.getBreed() != null) {
+                    pet.setBreed(pet.getBreed().toUpperCase());
+                }
+                
                 // Save pet first to get an ID
                 pet = petService.savePet(pet);
                 
@@ -152,10 +164,14 @@ public class PetController {
                 Pet dbPet = petService.getPetById(pet.getId());
                 System.out.println("Database pet before update: " + dbPet);
                 // Copy editable fields from form-bound pet to the persistent entity
-                dbPet.setName(pet.getName());
+                if (pet.getName() != null) {
+                    dbPet.setName(pet.getName().toUpperCase());
+                }
                 dbPet.setGender(pet.getGender());
                 dbPet.setAnimalType(pet.getAnimalType());
-                dbPet.setBreed(pet.getBreed());
+                if (pet.getBreed() != null) {
+                    dbPet.setBreed(pet.getBreed().toUpperCase());
+                }
                 dbPet.setNeutered(pet.getNeutered());
                 dbPet.setEntryDate(pet.getEntryDate());
                 dbPet.setBirthDate(pet.getBirthDate());
@@ -182,8 +198,8 @@ public class PetController {
                     System.out.println("Stored new photo: " + fileName);
                     updatedPet.setPhotoFilename(fileName);
                 }
-                
-                Pet savedPet = petService.savePet(updatedPet);
+                petService.savePet(updatedPet);
+                // Pet savedPet = petService.savePet(updatedPet);
                 // System.out.println("Pet after save: " + savedPet);
             }
             
@@ -227,7 +243,7 @@ public class PetController {
             model.addAttribute("customer", pet.getCustomer());
             model.addAttribute("pet", pet);
             model.addAttribute("pageTitle", "Edit Pet ID: " + petId + ",(Customer IDs: "+ customerId +" )");
-            model.addAttribute("animalTypes", Pet.AnimalType.values());
+            model.addAttribute("animalTypes", animalTypeService.getAllAnimalTypes());
             model.addAttribute("genders", Pet.Gender.values());
             model.addAttribute("neuteredOptions", Pet.Neutered.values());
             return "pet_form";

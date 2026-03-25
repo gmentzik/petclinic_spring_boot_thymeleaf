@@ -26,9 +26,8 @@ public class Pet {
   @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<MedicalHistory> medicalHistory;
 
-  @Column(name = "animal_type")
-  @Enumerated(EnumType.STRING)
-  private AnimalType animalType;
+  @Column(name = "animal_type", length = 100)
+  private String animalType;
 
   @Column(length = 128)
   private String breed;
@@ -36,7 +35,6 @@ public class Pet {
   @Enumerated(EnumType.STRING)
   private Gender gender;
 
-  
   @Enumerated(EnumType.STRING)
   @Column(name = "neutered")
   private Neutered neutered = Neutered.UNKNOWN;
@@ -61,11 +59,11 @@ public class Pet {
   @Column(name = "photo_filename", length = 255)
   private String photoFilename;
 
-@Transient
-public Integer getAge() {
+  @Transient
+  public Integer getAge() {
     if (birthDate == null) return null;
     return Period.between(birthDate, LocalDate.now()).getYears();
-}
+  }
 
   public Pet() {
     this.entryDate = LocalDate.now();
@@ -82,16 +80,6 @@ public Integer getAge() {
     UNKNOWN
   }
 
-
-  public enum AnimalType {
-    DOG,
-    CAT,
-    BIRD,
-    FISH,
-    REPTILE,
-    OTHER
-  }
-
   public Pet(String name, Customer customer) {
     this.name = name;
     this.customer = customer;
@@ -99,7 +87,7 @@ public Integer getAge() {
 
   public Pet(String name,
              Customer customer,
-             AnimalType animalType,
+             String animalType,
              String breed,
              Gender gender,
              Neutered neutered,
@@ -161,7 +149,6 @@ public Integer getAge() {
     this.gender = gender;
   }
 
-
   public Neutered getNeutered() {
     return neutered;
   }
@@ -170,11 +157,11 @@ public Integer getAge() {
     this.neutered = neutered;
   }
 
-  public AnimalType getAnimalType() {
+  public String getAnimalType() {
     return animalType;
   }
 
-  public void setAnimalType(AnimalType animalType) {
+  public void setAnimalType(String animalType) {
     this.animalType = animalType;
   }
 
