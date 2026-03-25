@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AnimalTypeService {
@@ -14,56 +13,88 @@ public class AnimalTypeService {
     @Value("${app.locale}")
     private String defaultLocale;
     
-    private Map<String, Map<String, String>> animalTypes;
+    private List<AnimalType> animalTypes;
+    
+    private static class AnimalType {
+        private String code;
+        private int order;
+        private Map<String, String> displayNames;
+        
+        public AnimalType(String code, int order) {
+            this.code = code;
+            this.order = order;
+            this.displayNames = new HashMap<>();
+        }
+        
+        public AnimalType addDisplayName(String language, String name) {
+            this.displayNames.put(language, name);
+            return this;
+        }
+        
+        public String getCode() {
+            return code;
+        }
+        
+        public int getOrder() {
+            return order;
+        }
+        
+        public String getDisplayName(String language) {
+            return displayNames.getOrDefault(language, code);
+        }
+        
+        public Map<String, String> getAllDisplayNames() {
+            return new HashMap<>(displayNames);
+        }
+    }
     
     @PostConstruct
     public void init() {
-        animalTypes = new HashMap<>();
+        animalTypes = new ArrayList<>();
         
         // Initialize with static data
-        addAnimalType("DOG", "GR", "ΣΚΥΛΟΣ");
-        addAnimalType("DOG", "EN", "Dog");
+        animalTypes.add(new AnimalType("DOG", 1)
+            .addDisplayName("GR", "ΣΚΥΛΟΣ")
+            .addDisplayName("EN", "Dog"));
         
-        addAnimalType("CAT", "GR", "ΓΑΤΑ");
-        addAnimalType("CAT", "EN", "Cat");
+        animalTypes.add(new AnimalType("CAT", 2)
+            .addDisplayName("GR", "ΓΑΤΑ")
+            .addDisplayName("EN", "Cat"));
         
-        addAnimalType("RODDENT", "GR", "ΤΡΩΚΤΙΚΟ");
-        addAnimalType("RODDENT", "EN", "Rodent");
+        animalTypes.add(new AnimalType("RODDENT", 3)
+            .addDisplayName("GR", "ΤΡΩΚΤΙΚΟ")
+            .addDisplayName("EN", "Rodent"));
         
-        addAnimalType("BIRD", "GR", "ΠΤΗΝΟ");
-        addAnimalType("BIRD", "EN", "Bird");
+        animalTypes.add(new AnimalType("BIRD", 4)
+            .addDisplayName("GR", "ΠΤΗΝΟ")
+            .addDisplayName("EN", "Bird"));
         
-        addAnimalType("FISH", "GR", "ΨΑΡΙ");
-        addAnimalType("FISH", "EN", "Fish");
+        animalTypes.add(new AnimalType("FISH", 5)
+            .addDisplayName("GR", "ΨΑΡΙ")
+            .addDisplayName("EN", "Fish"));
         
-        addAnimalType("REPTILE", "GR", "ΕΡΠΕΤΟ");
-        addAnimalType("REPTILE", "EN", "Reptile");
+        animalTypes.add(new AnimalType("REPTILE", 6)
+            .addDisplayName("GR", "ΕΡΠΕΤΟ")
+            .addDisplayName("EN", "Reptile"));
         
-        addAnimalType("OTHER", "GR", "ΑΛΛΟ");
-        addAnimalType("OTHER", "EN", "Other");
-    }
-    
-    private void addAnimalType(String code, String locale, String displayName) {
-        animalTypes.computeIfAbsent(code, k -> new HashMap<>()).put(locale, displayName);
+        animalTypes.add(new AnimalType("OTHER", 100)
+            .addDisplayName("GR", "ΑΛΛΟ")
+            .addDisplayName("EN", "Other"));
     }
     
     /**
      * Gets display name for animal type in specified language
      */
-    public String getDisplayName(String key, String language) {
-        if (key == null || !animalTypes.containsKey(key)) {
-            return key;
-        }
-        
-        Map<String, String> names = animalTypes.get(key);
-        return names.getOrDefault(language, key);
+    public String getDisplayName(String code, String language) {
+        AnimalType animalType = findByCode(code);
+        return animalType != null ? animalType.getDisplayName(language) : code;
     }
     
     /**
      * Gets display name for animal type in default locale
      */
-    public String getDisplayName(String key) {
-        return getDisplayName(key, defaultLocale);
+    public String getDisplayName(String code) {
+        return getDisplayName(code, defaultLocale);
     }
     
     /**
@@ -77,41 +108,50 @@ public class AnimalTypeService {
      * Gets all animal types for specified language
      */
     public Map<String, String> getAllAnimalTypes(String language) {
-        Map<String, String> result = new HashMap<>();
-        
-        for (Map.Entry<String, Map<String, String>> entry : animalTypes.entrySet()) {
-            String code = entry.getKey();
-            String displayName = entry.getValue().getOrDefault(language, code);
-            result.put(code, displayName);
-        }
-        
-        return result;
+        return animalTypes.stream()
+            .sorted(Comparator.comparing(AnimalType::getOrder))
+            .collect(Collectors.toMap(
+                AnimalType::getCode,
+                at -> at.getDisplayName(language),
+                (oldValue, newValue) -> oldValue,
+                LinkedHashMap::new
+            ));
     }
     
     /**
-     * Gets raw animal types map with all languages
+     * Gets all animal type objects
      */
-    public Map<String, Map<String, String>> getAllAnimalTypesRaw() {
-        return new HashMap<>(animalTypes);
+    public List<AnimalType> getAllAnimalTypeObjects() {
+        return animalTypes.stream()
+            .sorted(Comparator.comparing(AnimalType::getOrder))
+            .collect(Collectors.toList());
     }
     
     /**
      * Validates if animal type code exists
      */
-    public boolean isValidAnimalType(String key) {
-        return key != null && animalTypes.containsKey(key);
+    public boolean isValidAnimalType(String code) {
+        return findByCode(code) != null;
     }
     
     /**
      * Gets all supported language codes
      */
     public Set<String> getSupportedLanguages() {
-        Set<String> languages = new java.util.HashSet<>();
-        
-        for (Map<String, String> names : animalTypes.values()) {
-            languages.addAll(names.keySet());
+        Set<String> languages = new HashSet<>();
+        for (AnimalType animalType : animalTypes) {
+            languages.addAll(animalType.getAllDisplayNames().keySet());
         }
-        
         return languages;
+    }
+    
+    /**
+     * Find animal type by code
+     */
+    private AnimalType findByCode(String code) {
+        return animalTypes.stream()
+            .filter(at -> at.getCode().equals(code))
+            .findFirst()
+            .orElse(null);
     }
 }
