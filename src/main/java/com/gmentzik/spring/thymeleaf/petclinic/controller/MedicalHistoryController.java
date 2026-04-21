@@ -225,7 +225,7 @@ public class MedicalHistoryController {
         try {
             System.out.println("IN EDIT MEDICAL RECORD");
             MedicalHistory mhr = medicalHistoryService.getMedicalHistoryById(recordId);
-            Pet pet = mhr.gePet();
+            Pet pet = mhr.getPet();
             Customer customer = pet.getCustomer();
             model.addAttribute("customer", customer);
             model.addAttribute("pet", pet);

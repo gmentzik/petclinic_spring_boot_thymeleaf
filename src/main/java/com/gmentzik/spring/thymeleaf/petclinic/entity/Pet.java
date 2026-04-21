@@ -59,6 +59,9 @@ public class Pet {
   @Column(name = "photo_filename", length = 255)
   private String photoFilename;
 
+  @Column(name = "chip_id", length = 128)
+  private String chipId;
+
   @Transient
   public Integer getAge() {
     if (birthDate == null) return null;
@@ -219,6 +222,14 @@ public class Pet {
 
   public void setPhotoFilename(String photoFilename) {
     this.photoFilename = photoFilename;
+  }
+
+  public String getChipId() {
+    return chipId;
+  }
+
+  public void setChipId(String chipId) {
+    this.chipId = chipId;
   }
 
   @Override

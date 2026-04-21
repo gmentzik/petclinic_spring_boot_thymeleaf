@@ -175,6 +175,7 @@ public class PetController {
                 dbPet.setNeutered(pet.getNeutered());
                 dbPet.setEntryDate(pet.getEntryDate());
                 dbPet.setBirthDate(pet.getBirthDate());
+                dbPet.setChipId(pet.getChipId());
                 dbPet.setNote1(pet.getNote1());
                 dbPet.setNote2(pet.getNote2());
                 dbPet.setNote3(pet.getNote3());

@@ -106,6 +106,7 @@
             <th>Neutered</th>
             <th th:replace="~{fragments/sorting :: sortingPets('entryDate','Entry Date')}"></th>
             <th th:replace="~{fragments/sorting :: sortingPets('birthDate','Birth Date')}"></th>
+            <th>Chip</th>
             <th class="note-col">Note 1</th>
             <th class="note-col">Note 2</th>
             <th class="note-col">Note 3</th>
@@ -128,6 +129,14 @@
             <td>[[${pet.neutered}]]</td>
             <td>[[${pet.entryDate}]]</td>
             <td>[[${pet.birthDate}]]</td>
+            <td>
+              <span th:if="${pet.chipId != null and !pet.chipId.isEmpty()}" class="text-success" title="Chip ID: ${pet.chipId}">
+                <i class="fa-solid fa-check"></i>
+              </span>
+              <span th:unless="${pet.chipId != null and !pet.chipId.isEmpty()}" class="text-danger" title="No chip ID">
+                <i class="fa-solid fa-times"></i>
+              </span>
+            </td>
             <td class="note-col">
               <a href="#" class="note-preview" th:attr="data-full=${pet.note1}" data-title="Note1"
                  th:title="${pet.note1}"
