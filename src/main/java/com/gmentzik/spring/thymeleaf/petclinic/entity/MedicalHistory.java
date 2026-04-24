@@ -1,6 +1,7 @@
 package com.gmentzik.spring.thymeleaf.petclinic.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.Objects;
@@ -33,20 +34,20 @@ public class MedicalHistory {
     @Column(updatable=false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate created;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    LocalDate updated;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime updated;
 
     // OnCreate, OnUpdate
     @PrePersist
     public void onCreate() {  
         LocalDate now = LocalDate.now(ZoneOffset.UTC);
         this.created = now;
-        this.updated = now;
+        this.updated = LocalDateTime.now(ZoneOffset.UTC);
     }
     
     @PreUpdate
     public void onUpdate() {   
-        this.updated = LocalDate.now(ZoneOffset.UTC);
+        this.updated = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     public Integer getId() {
@@ -86,11 +87,11 @@ public class MedicalHistory {
         this.created = created;
     }
 
-    public LocalDate getUpdated() {
+    public LocalDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(LocalDate updated) {
+    public void setUpdated(LocalDateTime updated) {
         this.updated = updated;
     }
 
